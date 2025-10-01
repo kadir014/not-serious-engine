@@ -8,7 +8,10 @@
  * @brief Main API include file for Not-Serious-Engine.
  */
 
-#include "engine/include/_internal.h"
+#include "engine/include/core/error.h"
+#include "engine/include/core/types.h"
+
+#include "engine/include/app/app.h"
 
 
 #define NS_VERSION_MAJOR 0

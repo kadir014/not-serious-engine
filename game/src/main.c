@@ -2,13 +2,20 @@
 
 
 int main(int argc, char **argv) {
-    ns_throw_error("lol ll", 5, 3);
+    nsAppDefinition app_def = {
+        .window_title = "Not-Serious-Engine App",
+        .window_width = 1280,
+        .window_height = 720,
+        .target_fps = 60,
+        .vsync = true
+    };
+    nsApp *app = nsApp_new(app_def);
 
-    nsError error = ns_get_error();
+    nsApp_run(app);
 
-    printf("Error code: %u\n", error.code);
-    printf("Error severity: %u\n", error.severity);
-    printf("Error message: %s\n", error.message);
+    nsApp_free(app);
+
+    printf("%s\n", ns_get_error().message);
 
     return EXIT_SUCCESS;
 }

@@ -11,14 +11,14 @@
  */
 
 
-typedef int8_t ns_int8;
-typedef int16_t ns_int16;
-typedef int32_t ns_int32;
-typedef int64_t ns_int64;
-typedef uint8_t ns_uint8;
-typedef uint16_t ns_uint16;
-typedef uint32_t ns_uint32;
-typedef uint64_t ns_uint64;
+typedef int8_t ns_i8;
+typedef int16_t ns_i16;
+typedef int32_t ns_i32;
+typedef int64_t ns_i64;
+typedef uint8_t ns_u8;
+typedef uint16_t ns_u16;
+typedef uint32_t ns_u32;
+typedef uint64_t ns_u64;
 
 
 typedef int ns_bool;

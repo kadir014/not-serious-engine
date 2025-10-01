@@ -28,8 +28,20 @@ else
 endif
 
 
+sdl2_dep = dependency('sdl2')
+opengl_dep = dependency('gl')
+
+if compiler.get_id() == 'msvc'
+    sdl2_main_dep = dependency('sdl2main')
+    deps = [sdl2_dep, sdl2_main_dep, opengl_dep]
+else
+    deps = [sdl2_dep, opengl_dep]
+endif
+
+
 engine_src = [
     'engine/src/core/error.c',
+    'engine/src/app/app.c'
 ]
 
 external_src = [
@@ -44,6 +56,7 @@ libnsengine = library(
     include_directories: engine_includes,
     c_args: c_args,
     link_args: link_args,
+    dependencies: deps,
     version: '0.0.0',
     install: true
 )
@@ -61,22 +74,12 @@ game_src = [
 ]
 game_includes = engine_includes
 
-sdl2_dep = dependency('sdl2')
-opengl_dep = dependency('gl')
-
-if compiler.get_id() == 'msvc'
-    sdl2_main_dep = dependency('sdl2main')
-    game_deps = [sdl2_dep, sdl2_main_dep, opengl_dep]
-else
-    game_deps = [sdl2_dep, opengl_dep]
-endif
-
 executable(
     'game',
     sources: game_src,
     include_directories: game_includes,
     c_args: c_args,
     link_args: link_args,
-    dependencies: game_deps,
+    dependencies: deps,
     link_with: libnsengine
 )

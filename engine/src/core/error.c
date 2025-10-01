@@ -8,9 +8,9 @@
 
 
 nsError _ns_global_error = {
-    .message="",
-    .code=0,
-    .severity=nsErrorSeverity_INFO
+    .message = "",
+    .code = 0,
+    .severity = nsErrorSeverity_INFO
 };
 
 

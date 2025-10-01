@@ -52,25 +52,25 @@ extern nsError _ns_global_error;
  * @param code Error code
  * @param severity Error severity
  */
-#define ns_throw_error(message_, code_, severity_) {                            \
+#define ns_throw_error(message_, code_, severity_) {                          \
     _ns_global_error.code = (unsigned int)code_;                              \
     _ns_global_error.severity = (unsigned int)severity_;                      \
-    char *_severity_str;                                                     \
+    char *_severity_str;                                                      \
     if (severity_ == nsErrorSeverity_INFO) _severity_str = "INFO";            \
     else if (severity_ == nsErrorSeverity_WARNING) _severity_str = "WARNING"; \
     else if (severity_ == nsErrorSeverity_ERROR) _severity_str = "ERROR";     \
     else if (severity_ == nsErrorSeverity_FATAL) _severity_str = "FATAL";     \
-    sprintf(                                                                 \
-        _ns_global_error.message,                                            \
-        "[%s] code %d in %s, line %d: %s\n",                                 \
-        _severity_str, code_, __FILE__, __LINE__, message_                     \
-    );                                                                       \
+    sprintf(                                                                  \
+        _ns_global_error.message,                                             \
+        "[%s] in %s, line %d: %s\n",                                          \
+        _severity_str, __FILE__, __LINE__, message_                           \
+    );                                                                        \
 }
 
 /**
  * @brief Get the last occured error.
  * 
- * @return char *
+ * @return nsError
  */
 nsError ns_get_error();
 
@@ -82,7 +82,7 @@ nsError ns_get_error();
  */
 #define NS_MEM_CHECK(object) {              \
     if (!(object)) {                        \
-        ns_set_error(                       \
+        ns_throw_error(                     \
             "Failed to allocate memory.",   \
             nsErrorCode_ALLOCATION_FAILED,  \
             nsErrorSeverity_FATAL);         \
@@ -97,7 +97,7 @@ nsError ns_get_error();
  */
 #define NS_MEM_CHECK_I(object) {           \
     if (!(object)) {                       \
-        ns_set_error(                      \
+        ns_throw_error(                    \
             "Failed to allocate memory.",  \
             nsErrorCode_ALLOCATION_FAILED, \
             nsErrorSeverity_FATAL          \
