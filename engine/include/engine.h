@@ -1,3 +1,13 @@
+/*
+
+  This file is a part of the Not Serious Engine
+  project and distributed under the GNU GPL v3 license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/not-serious-engine
+
+*/
+
 #ifndef _NS_API_H
 #define _NS_API_H
 
@@ -8,6 +18,7 @@
  * @brief Main API include file for Not-Serious-Engine.
  */
 
+ 
 #include "engine/include/core/error.h"
 #include "engine/include/core/types.h"
 
