@@ -35,7 +35,9 @@ typedef enum {
  * @brief Common error codes used commonly in the engine.
  */
 typedef enum {
+    nsErrorCode_OTHER = 0,
     nsErrorCode_ALLOCATION_FAILED = 1,
+    nsErrorCode_SHADER_COMPILATION_FAILED = 2
 } nsErrorCode;
 
 

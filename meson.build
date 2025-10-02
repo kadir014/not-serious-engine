@@ -41,6 +41,9 @@ endif
 
 engine_src = [
     'engine/src/core/error.c',
+    'engine/src/core/io.c',
+    'engine/src/graphics/material.c',
+    'engine/src/graphics/mesh.c',
     'engine/src/app/app.c'
 ]
 

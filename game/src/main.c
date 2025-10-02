@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
 
     nsApp_free(app);
 
+    printf("latest error before exiting:\n");
     printf("%s\n", ns_get_error().message);
 
     return EXIT_SUCCESS;

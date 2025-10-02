@@ -46,7 +46,7 @@ typedef struct {
  * 
  * Returns `NULL` on error. Use @ref ns_get_error to get more information.
  * 
- * @param app_def 
+ * @param app_def Application definition
  * @return nsApp * 
  */
 nsApp *nsApp_new(nsAppDefinition app_def);
@@ -56,7 +56,7 @@ nsApp *nsApp_new(nsAppDefinition app_def);
  * 
  * It's safe to pass `NULL` to this function.
  * 
- * @param app 
+ * @param app Application to free
  */
 void nsApp_free(nsApp *app);
 

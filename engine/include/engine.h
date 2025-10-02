@@ -22,6 +22,13 @@
 #include "engine/include/core/error.h"
 #include "engine/include/core/types.h"
 
+#include "engine/include/math/math.h"
+#include "engine/include/math/vector.h"
+#include "engine/include/math/matrix.h"
+
+#include "engine/include/graphics/material.h"
+#include "engine/include/graphics/mesh.h"
+
 #include "engine/include/app/app.h"
 
 
