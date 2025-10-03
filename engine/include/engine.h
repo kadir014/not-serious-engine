@@ -21,6 +21,10 @@
  
 #include "engine/include/core/error.h"
 #include "engine/include/core/types.h"
+#include "engine/include/core/platform.h"
+#include "engine/include/core/array.h"
+#include "engine/include/core/io.h"
+#include "engine/include/core/version.h"
 
 #include "engine/include/math/math.h"
 #include "engine/include/math/vector.h"
@@ -30,11 +34,6 @@
 #include "engine/include/graphics/mesh.h"
 
 #include "engine/include/app/app.h"
-
-
-#define NS_VERSION_MAJOR 0
-#define NS_VERSION_MINOR 0
-#define NS_VERSION_PATCH 0
 
 
 #endif

@@ -26,7 +26,7 @@
  * data such as textures, uniforms and states.
  */
 typedef struct {
-    ns_u32 program_id;
+    ns_u32 program_id; /**< GL shader program object. */
 } nsMaterial;
 
 /**

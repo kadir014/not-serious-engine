@@ -28,11 +28,11 @@
  * @brief Type representing a triangular polygon mesh.
  */
 typedef struct {
-    ns_u32 vao_id;
+    ns_u32 vao_id; /**< GL vertex array object. */
 
-    nsArray *buffers;
+    nsArray *buffers; /**< Array of assigned buffers, first is the primary. */
 
-    nsMaterial *material;
+    nsMaterial *material; /**< Assigned material. */
 } nsMesh;
 
 /**

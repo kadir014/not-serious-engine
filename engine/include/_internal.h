@@ -29,6 +29,8 @@
 
 #include "engine/include/core/types.h"
 #include "engine/include/core/error.h"
+#include "engine/include/core/platform.h"
+#include "engine/include/core/version.h"
 
 
 /*

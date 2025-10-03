@@ -39,6 +39,7 @@ nsApp *nsApp_new(nsAppDefinition app_def) {
     //TODO: Request version and multisampling
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 
@@ -90,6 +91,41 @@ void nsApp_free(nsApp *app) {
     SDL_Quit();
 
     NS_FREE(app);
+}
+
+typedef struct {
+    int major;
+    int minor;
+    int profile;
+    char profile_str[16];
+} GLVersionInfo;
+
+GLVersionInfo fetch_opengl_version() {
+    GLVersionInfo version;
+
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &version.major);
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &version.minor);
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &version.profile);
+
+    switch (version.profile) {
+        case (SDL_GL_CONTEXT_PROFILE_CORE):
+            strcpy(version.profile_str, "Core");
+            break;
+
+        case (SDL_GL_CONTEXT_PROFILE_COMPATIBILITY):
+            strcpy(version.profile_str, "Compatibility");
+            break;
+
+        case (SDL_GL_CONTEXT_PROFILE_ES):
+            strcpy(version.profile_str, "ES");
+            break;
+
+        default:
+            strcpy(version.profile_str, "Unknown");
+            break;
+    }
+
+    return version;
 }
 
 void cube_factory(float vertices[108], float normals[108]) {
@@ -184,7 +220,7 @@ void nsApp_run(nsApp *app) {
         printf(ns_get_error().message);
         return;
     }
-    printf("Shaders loaded successfully! (id: %u)\n", material->program_id);
+    //printf("Shaders loaded successfully! (id: %u)\n", material->program_id);
 
     float vertices[108];
     float normals[108];
@@ -269,6 +305,23 @@ void nsApp_run(nsApp *app) {
     SDL_SetRelativeMouseMode(true);
 
     float a = 0.0;
+
+    GLVersionInfo glversion = fetch_opengl_version();
+    printf(
+        "Not-Serious-Engine %d.%d.%d\n"
+        "========================\n"
+        "Compiler: %s %s\n"
+        "Platform: %s\n"
+        "Arch:     %s\n"
+        "SDL:      %d.%d.%d\n"
+        "OpenGL:   %d.%d %s\n",
+        NS_ENGINE_VERSION_MAJOR, NS_ENGINE_VERSION_MINOR, NS_ENGINE_VERSION_PATCH,
+        NS_COMPILER_as_string(), NS_COMPILER_VERSION_STR,
+        NS_PLATFORM_as_string(),
+        NS_ARCH_as_string(),
+        SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL,
+        glversion.major, glversion.minor, glversion.profile_str
+    );
 
     while (app->is_running) {
         // TODO: clock tick
