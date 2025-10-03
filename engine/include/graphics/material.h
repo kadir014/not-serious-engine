@@ -12,6 +12,10 @@
 #define _NS_MATERIAL_H
 
 #include "engine/include/_internal.h"
+#include "engine/include/graphics/uniform.h"
+#include "engine/include/core/array.h"
+#include "engine/include/math/vector.h"
+#include "engine/include/math/matrix.h"
 
 
 /**
@@ -27,6 +31,8 @@
  */
 typedef struct {
     ns_u32 program_id; /**< GL shader program object. */
+
+    nsArray *uniforms_cache;
 } nsMaterial;
 
 /**
@@ -65,6 +71,29 @@ nsMaterial *nsMaterial_from_files(
  * @param material Material to free
  */
 void nsMaterial_free(nsMaterial *material);
+
+/**
+ * @brief Get uniform, cache it if first time.
+ * 
+ * Returns `NULL` on error. Use @ref ns_get_error to get more information.
+ * 
+ * @param material Material
+ * @param name Uniform name
+ * @return nsUniform *
+ */
+nsUniform *nsMaterial_get_uniform(nsMaterial *material, char *name);
+
+void nsMaterial_set_uniform_vector3(
+    nsMaterial *material,
+    char *name,
+    nsVector3 vec
+);
+
+void nsMaterial_set_uniform_matrix4(
+    nsMaterial *material,
+    char *name,
+    nsMatrix4 mat
+);
 
 
 #endif

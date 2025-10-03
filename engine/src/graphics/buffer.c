@@ -11,6 +11,13 @@
 #include "engine/include/graphics/buffer.h"
 
 
+/**
+ * @file graphics/buffer.c
+ * 
+ * @brief Buffer type.
+ */
+
+
 nsBuffer *nsBuffer_new(ns_u32 attribute_loc, ns_u32 components) {
     nsBuffer *buffer = NS_NEW(nsBuffer);
     NS_MEM_CHECK(buffer);

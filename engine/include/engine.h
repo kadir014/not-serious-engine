@@ -32,6 +32,8 @@
 
 #include "engine/include/graphics/material.h"
 #include "engine/include/graphics/mesh.h"
+#include "engine/include/graphics/buffer.h"
+#include "engine/include/graphics/uniform.h"
 
 #include "engine/include/app/app.h"
 

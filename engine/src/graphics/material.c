@@ -74,7 +74,19 @@ nsMaterial *nsMaterial_new(
     }
 
     nsMaterial *material = NS_NEW(nsMaterial);
-    NS_MEM_CHECK(material);
+    if (!material) {
+        glDeleteShader(vertex_shader);
+        glDeleteShader(fragment_shader);
+        NS_MEM_CHECK(material);
+    }
+
+    material->uniforms_cache = nsArray_new();
+    if (!material->uniforms_cache) {
+        glDeleteShader(vertex_shader);
+        glDeleteShader(fragment_shader);
+        NS_FREE(material);
+        return NULL;
+    }
 
     material->program_id = glCreateProgram();
     if (!material->program_id) {
@@ -85,6 +97,7 @@ nsMaterial *nsMaterial_new(
         );
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
+        nsArray_free(material->uniforms_cache);
         NS_FREE(material);
         return NULL;
     }
@@ -103,6 +116,7 @@ nsMaterial *nsMaterial_new(
         glDeleteProgram(material->program_id);
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
+        nsArray_free(material->uniforms_cache);
         NS_FREE(material);
         return NULL;
     }
@@ -138,6 +152,57 @@ void nsMaterial_free(nsMaterial *material) {
     if (!material) return;
 
     glDeleteProgram(material->program_id);
+    
+    nsArray_free_each(material->uniforms_cache, (nsArray_free_each_callback)nsUniform_free);
+    nsArray_free(material->uniforms_cache);
 
     NS_FREE(material);
+}
+
+nsUniform *nsMaterial_get_uniform(nsMaterial *material, char *name) {
+    // Search cache
+    for (size_t i = 0; i < material->uniforms_cache->size; i++) {
+        nsUniform *uniform = material->uniforms_cache->data[i];
+        if (strcmp(uniform->name, name) == 0) {
+            return uniform;
+        }
+    }
+
+    // Not found, query it
+    ns_i32 location = glGetUniformLocation(material->program_id, name);
+    if (location == -1) {
+        ns_throw_error("Uniform not found in shader program.", 0, nsErrorSeverity_WARNING);
+        return NULL;
+    }
+
+    // Cache it
+    nsUniform *uniform = nsUniform_new(name, location);
+    nsArray_add(material->uniforms_cache, uniform);
+    return uniform;
+}
+
+void nsMaterial_set_uniform_vector3(
+    nsMaterial *material,
+    char *name,
+    nsVector3 vec
+) {
+    nsUniform *uniform = nsMaterial_get_uniform(material, name);
+
+    if (uniform) {
+        glUseProgram(material->program_id);
+        glUniform3f(uniform->location, vec.x, vec.y, vec.z);
+    }
+}
+
+void nsMaterial_set_uniform_matrix4(
+    nsMaterial *material,
+    char *name,
+    nsMatrix4 mat
+) {
+    nsUniform *uniform = nsMaterial_get_uniform(material, name);
+
+    if (uniform) {
+        glUseProgram(material->program_id);
+        glUniformMatrix4fv(uniform->location, 1, GL_FALSE, mat.m);
+    }
 }

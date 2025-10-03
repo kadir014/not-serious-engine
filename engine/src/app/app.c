@@ -243,54 +243,18 @@ void nsApp_run(nsApp *app) {
     nsMesh_push_buffer(mesh2, normals_buffer);
     nsMesh_initialize(mesh2);
 
-    // ns_u32 in_position_location = 0;
-    // ns_u32 VBO;
-    // glGenBuffers(1, &VBO);
-
-    // ns_u32 in_normal_location = 1;
-    // ns_u32 NBO;
-    // glGenBuffers(1, &NBO);
-
-    // ns_u32 VAO;
-    // glGenVertexArrays(1, &VAO);
-
-    // glBindVertexArray(VAO);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count * 3, vertices, GL_STATIC_DRAW);
-    // glVertexAttribPointer(in_position_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    // glEnableVertexAttribArray(in_position_location);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, NBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count * 3, normals, GL_STATIC_DRAW);
-    // glVertexAttribPointer(in_normal_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    // glEnableVertexAttribArray(in_normal_location);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
     nsMatrix4 model = nsMatrix4_identity;
-    // model.m[5] = ns_cos(NS_RADIANS(-55.0f));
-    // model.m[6] = ns_sin(NS_RADIANS(-55.0f));
-    // model.m[9] = -ns_sin(NS_RADIANS(-55.0f));
-    // model.m[10] = ns_cos(NS_RADIANS(-55.0f));
 
     nsMatrix4 view = nsMatrix4_identity;
     view = nsMatrix4_translate(view, NS_VECTOR3(0.0f, 0.0f, -3.0f));
 
     nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), 1280.0f/720.0f, 0.1f, 1000.0f);
 
-    // Before changing uniforms bind the program!
-    glUseProgram(material->program_id);
+    nsMaterial_set_uniform_matrix4(material, "u_model", model);
 
-    ns_u32 u_model = glGetUniformLocation(material->program_id, "u_model");
-    glUniformMatrix4fv(u_model, 1, GL_FALSE, model.m);
+    nsMaterial_set_uniform_matrix4(material, "u_view", view);
 
-    ns_u32 u_view = glGetUniformLocation(material->program_id, "u_view");
-    glUniformMatrix4fv(u_view, 1, GL_FALSE, view.m);
-
-    ns_u32 u_projection = glGetUniformLocation(material->program_id, "u_projection");
-    glUniformMatrix4fv(u_projection, 1, GL_FALSE, projection.m);
+    nsMaterial_set_uniform_matrix4(material, "u_projection", projection);
 
     nsVector3 camera_pos = NS_VECTOR3(0.0f, 0.0f, 13.0f);
     nsVector3 camera_front = NS_VECTOR3(0.0f, 0.0f, -1.0f);
@@ -358,7 +322,7 @@ void nsApp_run(nsApp *app) {
             model.m[6] = ns_sin(NS_RADIANS(a));
             model.m[9] = -ns_sin(NS_RADIANS(a));
             model.m[10] = ns_cos(NS_RADIANS(a));
-            glUniformMatrix4fv(u_model, 1, GL_FALSE, model.m);
+            nsMaterial_set_uniform_matrix4(material, "u_model", model);
 
             int mouse_rx, mouse_ry;
             SDL_GetRelativeMouseState(&mouse_rx, &mouse_ry);
@@ -393,15 +357,12 @@ void nsApp_run(nsApp *app) {
             }
 
             view = nsMatrix4_look_at(camera_pos, nsVector3_add(camera_pos, camera_front), camera_up);
-            glUniformMatrix4fv(u_view, 1, GL_FALSE, view.m);
+            nsMaterial_set_uniform_matrix4(material, "u_view", view);
 
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             glClear(GL_DEPTH_BUFFER_BIT);
-
-            // glUseProgram(material->program_id);
-            // glBindVertexArray(VAO);
-            // glDrawArrays(GL_TRIANGLES, 0, 3 * 12);
+            
             nsMesh_render(mesh);
         }
 

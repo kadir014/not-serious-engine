@@ -41,7 +41,7 @@ void nsMesh_free(nsMesh *mesh) {
 
     glDeleteVertexArrays(1, &mesh->vao_id);
 
-    nsArray_free_each(mesh->buffers, nsBuffer_free);
+    nsArray_free_each(mesh->buffers, (nsArray_free_each_callback)nsBuffer_free);
     nsArray_free(mesh->buffers);
 
     NS_FREE(mesh);
