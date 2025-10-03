@@ -10,6 +10,8 @@
 
 #include "engine/include/app/app.h"
 #include "engine/include/graphics/material.h"
+#include "engine/include/graphics/mesh.h"
+#include "engine/include/graphics/buffer.h"
 #include "engine/include/math/vector.h"
 #include "engine/include/math/matrix.h"
 #include "engine/include/math/math.h"
@@ -182,38 +184,54 @@ void nsApp_run(nsApp *app) {
         printf(ns_get_error().message);
         return;
     }
-    printf("Shaders loaded successfully! (id: %u)\n", material->program);
+    printf("Shaders loaded successfully! (id: %u)\n", material->program_id);
 
     float vertices[108];
     float normals[108];
     size_t vertex_count = 36;
     cube_factory(vertices, normals);
 
-    ns_u32 in_position_location = 0;
-    ns_u32 VBO;
-    glGenBuffers(1, &VBO);
+    nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
+    nsBuffer_write(vertices_buffer, vertices, 36);
 
-    ns_u32 in_normal_location = 1;
-    ns_u32 NBO;
-    glGenBuffers(1, &NBO);
+    nsBuffer *normals_buffer = nsBuffer_new(1, 3);
+    nsBuffer_write(normals_buffer, normals, 36);
 
-    ns_u32 VAO;
-    glGenVertexArrays(1, &VAO);
+    nsMesh *mesh = nsMesh_new(material);
+    nsMesh_push_buffer(mesh, vertices_buffer);
+    nsMesh_push_buffer(mesh, normals_buffer);
+    nsMesh_initialize(mesh);
 
-    glBindVertexArray(VAO);
+    nsMesh *mesh2 = nsMesh_new(material);
+    nsMesh_push_buffer(mesh2, vertices_buffer);
+    nsMesh_push_buffer(mesh2, normals_buffer);
+    nsMesh_initialize(mesh2);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count * 3, vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(in_position_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(in_position_location);
+    // ns_u32 in_position_location = 0;
+    // ns_u32 VBO;
+    // glGenBuffers(1, &VBO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, NBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count * 3, normals, GL_STATIC_DRAW);
-    glVertexAttribPointer(in_normal_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(in_normal_location);
+    // ns_u32 in_normal_location = 1;
+    // ns_u32 NBO;
+    // glGenBuffers(1, &NBO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    // ns_u32 VAO;
+    // glGenVertexArrays(1, &VAO);
+
+    // glBindVertexArray(VAO);
+
+    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count * 3, vertices, GL_STATIC_DRAW);
+    // glVertexAttribPointer(in_position_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    // glEnableVertexAttribArray(in_position_location);
+
+    // glBindBuffer(GL_ARRAY_BUFFER, NBO);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count * 3, normals, GL_STATIC_DRAW);
+    // glVertexAttribPointer(in_normal_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    // glEnableVertexAttribArray(in_normal_location);
+
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindVertexArray(0);
 
     nsMatrix4 model = nsMatrix4_identity;
     // model.m[5] = ns_cos(NS_RADIANS(-55.0f));
@@ -227,15 +245,15 @@ void nsApp_run(nsApp *app) {
     nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), 1280.0f/720.0f, 0.1f, 1000.0f);
 
     // Before changing uniforms bind the program!
-    glUseProgram(material->program);
+    glUseProgram(material->program_id);
 
-    ns_u32 u_model = glGetUniformLocation(material->program, "u_model");
+    ns_u32 u_model = glGetUniformLocation(material->program_id, "u_model");
     glUniformMatrix4fv(u_model, 1, GL_FALSE, model.m);
 
-    ns_u32 u_view = glGetUniformLocation(material->program, "u_view");
+    ns_u32 u_view = glGetUniformLocation(material->program_id, "u_view");
     glUniformMatrix4fv(u_view, 1, GL_FALSE, view.m);
 
-    ns_u32 u_projection = glGetUniformLocation(material->program, "u_projection");
+    ns_u32 u_projection = glGetUniformLocation(material->program_id, "u_projection");
     glUniformMatrix4fv(u_projection, 1, GL_FALSE, projection.m);
 
     nsVector3 camera_pos = NS_VECTOR3(0.0f, 0.0f, 13.0f);
@@ -328,13 +346,16 @@ void nsApp_run(nsApp *app) {
             glClear(GL_COLOR_BUFFER_BIT);
             glClear(GL_DEPTH_BUFFER_BIT);
 
-            glUseProgram(material->program);
-            glBindVertexArray(VAO);
-            glDrawArrays(GL_TRIANGLES, 0, 3 * 12);
+            // glUseProgram(material->program_id);
+            // glBindVertexArray(VAO);
+            // glDrawArrays(GL_TRIANGLES, 0, 3 * 12);
+            nsMesh_render(mesh);
         }
 
         SDL_GL_SwapWindow(app->window);
     }
+
+    nsMesh_free(mesh);
 }
 
 void nsApp_stop(nsApp *app) {

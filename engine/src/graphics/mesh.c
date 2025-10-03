@@ -24,11 +24,14 @@ nsMesh *nsMesh_new(nsMaterial *material) {
 
     mesh->material = material;
 
-    glGenVertexArrays(1, &mesh->vao);
+    mesh->buffers = nsArray_new();
+    if (!mesh->buffers) {
+        NS_FREE(mesh);
+        return NULL;
+    }
 
-    mesh->vertex_count = 0;
-    mesh->normal_count = 0;
-    mesh->uv_count = 0;
+    glGenVertexArrays(1, &mesh->vao_id);
+    // TODO: check vao id
 
     return mesh;
 }
@@ -36,18 +39,48 @@ nsMesh *nsMesh_new(nsMaterial *material) {
 void nsMesh_free(nsMesh *mesh) {
     if (!mesh) return;
 
-    glDeleteVertexArrays(1, &mesh->vao);
-    glDeleteBuffers(1, &mesh->vertex_bo);
-    glDeleteBuffers(1, &mesh->normal_bo);
-    glDeleteBuffers(1, &mesh->uv_bo);
+    glDeleteVertexArrays(1, &mesh->vao_id);
+
+    nsArray_free_each(mesh->buffers, nsBuffer_free);
+    nsArray_free(mesh->buffers);
 
     NS_FREE(mesh);
 }
 
-void nsMesh_render(nsMesh *mesh) {
-    glUseProgram(mesh->material->program);
+void nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer) {
+    nsArray_add(mesh->buffers, buffer);
+}
 
-    glBindVertexArray(mesh->vao);
-    glDrawArrays(GL_TRIANGLES, 0, mesh->vertex_count);
+void nsMesh_initialize(nsMesh *mesh) {
+    glBindVertexArray(mesh->vao_id);
+    
+    for (size_t i = 0; i < mesh->buffers->size; i++) {
+        nsBuffer *buffer = mesh->buffers->data[i];
+
+        glBindBuffer(GL_ARRAY_BUFFER, buffer->buffer_id);
+        glVertexAttribPointer(
+            buffer->attribute_loc,
+            buffer->components,
+            GL_FLOAT,
+            GL_FALSE,
+            buffer->stride,
+            (void *)0
+        );
+        glEnableVertexAttribArray(buffer->attribute_loc);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void nsMesh_render(nsMesh *mesh) {
+    glUseProgram(mesh->material->program_id);
+
+    // TODO: Make this option better
+    nsBuffer *primary_buffer = mesh->buffers->data[0];
+    size_t vertex_count = primary_buffer->count;
+
+    glBindVertexArray(mesh->vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     glBindVertexArray(0);
 }

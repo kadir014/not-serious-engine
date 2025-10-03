@@ -62,11 +62,10 @@ nsMaterial *nsMaterial_new(
     const char *vertex_shader_source,
     const char *fragment_shader_source
 ) {
-    nsMaterial *material = NS_NEW(nsMaterial);
-    NS_MEM_CHECK(material);
-
     ns_u32 vertex_shader = load_shader(vertex_shader_source, GL_VERTEX_SHADER);
-    if (!vertex_shader) return NULL;
+    if (!vertex_shader) {
+        return NULL;
+    }
 
     ns_u32 fragment_shader = load_shader(fragment_shader_source, GL_FRAGMENT_SHADER);
     if (!fragment_shader) {
@@ -74,8 +73,11 @@ nsMaterial *nsMaterial_new(
         return NULL;
     }
 
-    material->program = glCreateProgram();
-    if (!material->program) {
+    nsMaterial *material = NS_NEW(nsMaterial);
+    NS_MEM_CHECK(material);
+
+    material->program_id = glCreateProgram();
+    if (!material->program_id) {
         ns_throw_error(
             "Shader program creation failed.",
             nsErrorCode_SHADER_COMPILATION_FAILED,
@@ -83,23 +85,25 @@ nsMaterial *nsMaterial_new(
         );
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
+        NS_FREE(material);
         return NULL;
     }
-    glAttachShader(material->program, vertex_shader);
-    glAttachShader(material->program, fragment_shader);
-    glLinkProgram(material->program);
+    glAttachShader(material->program_id, vertex_shader);
+    glAttachShader(material->program_id, fragment_shader);
+    glLinkProgram(material->program_id);
 
     int success;
-    glGetProgramiv(material->program, GL_LINK_STATUS, &success);
+    glGetProgramiv(material->program_id, GL_LINK_STATUS, &success);
     if(!success) {
         ns_throw_error(
             "Shader program linkage failed.",
             nsErrorCode_SHADER_COMPILATION_FAILED,
             nsErrorSeverity_FATAL
         );
-        glDeleteProgram(material->program);
+        glDeleteProgram(material->program_id);
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
+        NS_FREE(material);
         return NULL;
     }
 
@@ -133,7 +137,7 @@ nsMaterial *nsMaterial_from_files(
 void nsMaterial_free(nsMaterial *material) {
     if (!material) return;
 
-    glDeleteProgram(material->program);
+    glDeleteProgram(material->program_id);
 
     NS_FREE(material);
 }

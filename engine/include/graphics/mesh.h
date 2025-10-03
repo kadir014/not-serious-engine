@@ -12,7 +12,9 @@
 #define _NS_MESH_H
 
 #include "engine/include/_internal.h"
+#include "engine/include/core/array.h"
 #include "engine/include/graphics/material.h"
+#include "engine/include/graphics/buffer.h"
 
 
 /**
@@ -26,7 +28,9 @@
  * @brief Type representing a triangular polygon mesh.
  */
 typedef struct {
-    ns_u32 vao;
+    ns_u32 vao_id;
+
+    nsArray *buffers;
 
     nsMaterial *material;
 } nsMesh;
@@ -49,6 +53,10 @@ nsMesh *nsMesh_new(nsMaterial *material);
  * @param mesh Mesh to free
  */
 void nsMesh_free(nsMesh *mesh);
+
+void nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer);
+
+void nsMesh_initialize(nsMesh *mesh);
 
 void nsMesh_render(nsMesh *mesh);
 
