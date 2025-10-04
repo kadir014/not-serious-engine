@@ -134,7 +134,7 @@ void nsApp_run(nsApp *app) {
 
     nsMaterial *material = nsMaterial_from_files(
         "../game/src/shaders/base.vsh",
-        "../game/src/shaders/base.fsh"
+        "../game/src/shaders/phong.fsh"
     );
     if (!material) {
         printf(ns_get_error().message);
@@ -209,9 +209,6 @@ void nsApp_run(nsApp *app) {
             // TODO: inputsystem->process(event)
         }
 
-        glClearColor(1.0, 1.0, 1.0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
-
         {
             nsVector3 rotation = nsModel_get_euler_angles(model0);
             rotation.x += 0.01f;
@@ -254,8 +251,9 @@ void nsApp_run(nsApp *app) {
 
             view = nsMatrix4_look_at(camera_pos, nsVector3_add(camera_pos, camera_front), camera_up);
             nsMaterial_set_uniform_matrix4(material, "u_view", view);
+            nsMaterial_set_uniform_vector3(material, "u_view_pos", camera_pos);
 
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             glClear(GL_DEPTH_BUFFER_BIT);
             
