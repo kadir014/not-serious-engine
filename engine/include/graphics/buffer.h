@@ -22,7 +22,7 @@
 
 
 /**
- * @brief TODO
+ * @brief General-purpose data container allocated on the GPU.
  */
 typedef struct {
     ns_u32 buffer_id; /**< GL buffer object. */

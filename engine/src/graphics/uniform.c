@@ -14,7 +14,7 @@
 /**
  * @file graphics/uniform.c
  * 
- * @brief Uniform storage buffer type.
+ * @brief Uniform storage buffer.
  */
 
 

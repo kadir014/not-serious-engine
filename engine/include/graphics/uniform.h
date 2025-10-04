@@ -17,12 +17,12 @@
 /**
  * @file graphics/uniform.h
  * 
- * @brief Uniform storage buffer type.
+ * @brief Uniform storage buffer.
  */
 
 
 /**
- * @brief Uniform storage buffer type.
+ * @brief Basic handle to a shader uniform storage.
  */
 typedef struct {
     char *name; /**< Name of the uniform. */

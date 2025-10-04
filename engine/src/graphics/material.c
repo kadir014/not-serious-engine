@@ -15,7 +15,7 @@
 /**
  * @file graphics/material.c
  * 
- * @brief Material type.
+ * @brief Abstract material type.
  */
 
 

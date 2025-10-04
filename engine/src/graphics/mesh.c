@@ -12,9 +12,9 @@
 
 
 /**
- * @file graphics/material.c
+ * @file graphics/mesh.c
  * 
- * @brief Material type.
+ * @brief Abstract mesh type.
  */
 
 

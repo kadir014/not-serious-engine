@@ -21,13 +21,13 @@
 /**
  * @file graphics/material.h
  * 
- * @brief Material type.
+ * @brief Abstract material type.
  */
 
 
 /**
- * @brief Type that encapsulates a GPU shader program and potential associated
- * data such as textures, uniforms and states.
+ * @brief Abstract type that encapsulates a GPU shader program and potential
+ * associated data such as textures, uniforms and states.
  */
 typedef struct {
     ns_u32 program_id; /**< GL shader program object. */

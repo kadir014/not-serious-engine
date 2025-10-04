@@ -20,12 +20,13 @@
 /**
  * @file graphics/mesh.h
  * 
- * @brief Mesh type.
+ * @brief Abstract mesh type.
  */
 
 
 /**
- * @brief Type representing a triangular polygon mesh.
+ * @brief Abstract type that represents a triangular polygon mesh and manage
+ * buffers for rendering.
  */
 typedef struct {
     ns_u32 vao_id; /**< GL vertex array object. */
