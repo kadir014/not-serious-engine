@@ -39,12 +39,129 @@ nsMesh *nsMesh_new(nsMaterial *material) {
 void nsMesh_free(nsMesh *mesh) {
     if (!mesh) return;
 
-    glDeleteVertexArrays(1, &mesh->vao_id);
-
     nsArray_free_each(mesh->buffers, (nsArray_free_each_callback)nsBuffer_free);
     nsArray_free(mesh->buffers);
 
+    nsMaterial_free(mesh->material);
+
+    glDeleteVertexArrays(1, &mesh->vao_id);
+
     NS_FREE(mesh);
+}
+
+nsMesh *nsMesh_from_cube(nsMaterial *material, float width, float height, float length) {
+    float width_h = width * 0.5f;
+    float height_h = height * 0.5f;
+    float length_h = length * 0.5f;
+
+    float vertices[108] = {
+        -width_h, -height_h,  length_h,
+         width_h, -height_h,  length_h,
+         width_h,  height_h,  length_h,
+        -width_h, -height_h,  length_h,
+         width_h,  height_h,  length_h,
+        -width_h,  height_h,  length_h,
+
+        -width_h, -height_h, -length_h,
+        -width_h,  height_h, -length_h,
+         width_h,  height_h, -length_h,
+        -width_h, -height_h, -length_h,
+         width_h,  height_h, -length_h,
+         width_h, -height_h, -length_h,
+
+        -width_h, -height_h, -length_h,
+        -width_h, -height_h,  length_h,
+        -width_h,  height_h,  length_h,
+        -width_h, -height_h, -length_h,
+        -width_h,  height_h,  length_h,
+        -width_h,  height_h, -length_h,
+
+         width_h, -height_h, -length_h,
+         width_h,  height_h, -length_h,
+         width_h,  height_h,  length_h,
+         width_h, -height_h, -length_h,
+         width_h,  height_h,  length_h,
+         width_h, -height_h,  length_h,
+
+        -width_h,  height_h, -length_h,
+        -width_h,  height_h,  length_h,
+         width_h,  height_h,  length_h,
+        -width_h,  height_h, -length_h,
+         width_h,  height_h,  length_h,
+         width_h,  height_h, -length_h,
+
+        -width_h, -height_h, -length_h,
+         width_h, -height_h, -length_h,
+         width_h, -height_h,  length_h,
+        -width_h, -height_h, -length_h,
+         width_h, -height_h,  length_h,
+        -width_h, -height_h,  length_h
+    };
+
+    float normals[108] = {
+         0, 0, 1,  0, 0, 1,  0, 0, 1,
+         0, 0, 1,  0, 0, 1,  0, 0, 1,
+
+         0, 0, -1, 0, 0, -1, 0, 0, -1,
+         0, 0, -1, 0, 0, -1, 0, 0, -1,
+
+        -1, 0, 0, -1, 0, 0, -1, 0, 0,
+        -1, 0, 0, -1, 0, 0, -1, 0, 0,
+
+         1, 0, 0,  1, 0, 0,  1, 0, 0,
+         1, 0, 0,  1, 0, 0,  1, 0, 0,
+
+         0, 1, 0,  0, 1, 0,  0, 1, 0,
+         0, 1, 0,  0, 1, 0,  0, 1, 0,
+
+         0, -1, 0, 0, -1, 0, 0, -1, 0,
+         0, -1, 0, 0, -1, 0, 0, -1, 0
+    };
+
+    nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
+    nsBuffer_write(vertices_buffer, vertices, 36);
+
+    nsBuffer *normals_buffer = nsBuffer_new(1, 3);
+    nsBuffer_write(normals_buffer, normals, 36);
+
+    nsMesh *mesh = nsMesh_new(material);
+    nsMesh_push_buffer(mesh, vertices_buffer);
+    nsMesh_push_buffer(mesh, normals_buffer);
+    nsMesh_initialize(mesh);
+
+    return mesh;
+}
+
+nsMesh *nsMesh_from_plane(nsMaterial *material, float width, float length) {
+    float width_h = width * 0.5f;
+    float length_h = length * 0.5f;
+
+    float vertices[18] = {
+        -width_h,  0.0f, -length_h,
+        -width_h,  0.0f,  length_h,
+         width_h,  0.0f,  length_h,
+        -width_h,  0.0f, -length_h,
+         width_h,  0.0f,  length_h,
+         width_h,  0.0f, -length_h,
+    };
+
+    float normals[18] = {
+        0, 1, 0,  0, 1, 0,  0, 1, 0,
+        0, 1, 0,  0, 1, 0,  0, 1, 0,
+    };
+
+    nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
+    nsBuffer_write(vertices_buffer, vertices, 6);
+
+    nsBuffer *normals_buffer = nsBuffer_new(1, 3);
+    nsBuffer_write(normals_buffer, normals, 6);
+
+    nsMesh *mesh = nsMesh_new(material);
+    nsMesh_push_buffer(mesh, vertices_buffer);
+    nsMesh_push_buffer(mesh, normals_buffer);
+    nsMesh_initialize(mesh);
+
+    return mesh;
 }
 
 void nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer) {
@@ -74,7 +191,9 @@ void nsMesh_initialize(nsMesh *mesh) {
 }
 
 void nsMesh_render(nsMesh *mesh) {
-    glUseProgram(mesh->material->program_id);
+    if (mesh->material) {
+        glUseProgram(mesh->material->program_id);
+    }
 
     // TODO: Make this option better
     nsBuffer *primary_buffer = mesh->buffers->data[0];

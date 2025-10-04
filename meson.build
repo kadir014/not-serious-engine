@@ -47,6 +47,7 @@ engine_src = [
     'engine/src/graphics/mesh.c',
     'engine/src/graphics/buffer.c',
     'engine/src/graphics/uniform.c',
+    'engine/src/model/model.c',
     'engine/src/app/app.c'
 ]
 

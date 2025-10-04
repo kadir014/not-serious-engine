@@ -43,20 +43,24 @@ typedef struct {
  * @brief Constant 4x4 identity matrix.
  */
 static const nsMatrix4 nsMatrix4_identity = {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
+    {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    }
 };
 
 /**
  * @brief Constant 4x4 zero matrix.
  */
 static const nsMatrix4 nsMatrix4_zero = {
-    0.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 0.0f
+    {
+        0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f
+    }
 };
 
 

@@ -9,12 +9,13 @@
 */
 
 #include "engine/include/app/app.h"
-#include "engine/include/graphics/material.h"
-#include "engine/include/graphics/mesh.h"
-#include "engine/include/graphics/buffer.h"
 #include "engine/include/math/vector.h"
 #include "engine/include/math/matrix.h"
 #include "engine/include/math/math.h"
+#include "engine/include/graphics/material.h"
+#include "engine/include/graphics/mesh.h"
+#include "engine/include/graphics/buffer.h"
+#include "engine/include/model/model.h"
 
 
 /**
@@ -128,87 +129,6 @@ GLVersionInfo fetch_opengl_version() {
     return version;
 }
 
-void cube_factory(float vertices[108], float normals[108]) {
-    const float cube_vertices[] = {
-        // Front face
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-        // Back face
-        -0.5f, -0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-
-        // Left face
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-
-        // Right face
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-
-        // Top face
-        -0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f, -0.5f,
-
-        // Bottom face
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f
-    };
-
-    const float cube_normals[] = {
-        // Front (0,0,1)
-         0,0,1,  0,0,1,  0,0,1,
-         0,0,1,  0,0,1,  0,0,1,
-        // Back (0,0,-1)
-         0,0,-1, 0,0,-1, 0,0,-1,
-         0,0,-1, 0,0,-1, 0,0,-1,
-        // Left (-1,0,0)
-        -1,0,0, -1,0,0, -1,0,0,
-        -1,0,0, -1,0,0, -1,0,0,
-        // Right (1,0,0)
-         1,0,0,  1,0,0,  1,0,0,
-         1,0,0,  1,0,0,  1,0,0,
-        // Top (0,1,0)
-         0,1,0,  0,1,0,  0,1,0,
-         0,1,0,  0,1,0,  0,1,0,
-        // Bottom (0,-1,0)
-         0,-1,0, 0,-1,0, 0,-1,0,
-         0,-1,0, 0,-1,0, 0,-1,0
-    };
-
-    for (size_t i = 0; i < 108; i++) {
-        vertices[i] = cube_vertices[i];
-    }
-
-    for (size_t i = 0; i < 108; i++) {
-        normals[i] = cube_normals[i];
-    }
-}
-
 void nsApp_run(nsApp *app) {
     app->is_running = true;
 
@@ -220,40 +140,18 @@ void nsApp_run(nsApp *app) {
         printf(ns_get_error().message);
         return;
     }
-    //printf("Shaders loaded successfully! (id: %u)\n", material->program_id);
 
-    float vertices[108];
-    float normals[108];
-    size_t vertex_count = 36;
-    cube_factory(vertices, normals);
+    nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0));
 
-    nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
-    nsBuffer_write(vertices_buffer, vertices, 36);
-
-    nsBuffer *normals_buffer = nsBuffer_new(1, 3);
-    nsBuffer_write(normals_buffer, normals, 36);
-
-    nsMesh *mesh = nsMesh_new(material);
-    nsMesh_push_buffer(mesh, vertices_buffer);
-    nsMesh_push_buffer(mesh, normals_buffer);
-    nsMesh_initialize(mesh);
-
-    nsMesh *mesh2 = nsMesh_new(material);
-    nsMesh_push_buffer(mesh2, vertices_buffer);
-    nsMesh_push_buffer(mesh2, normals_buffer);
-    nsMesh_initialize(mesh2);
-
-    nsMatrix4 model = nsMatrix4_identity;
+    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0));
+    nsModel_set_scale(ground, NS_VECTOR3(15.0, 1.0, 15.0));
+    nsModel_set_position(ground, NS_VECTOR3(0.0, -4.0, 0.0));
 
     nsMatrix4 view = nsMatrix4_identity;
     view = nsMatrix4_translate(view, NS_VECTOR3(0.0f, 0.0f, -3.0f));
-
-    nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), 1280.0f/720.0f, 0.1f, 1000.0f);
-
-    nsMaterial_set_uniform_matrix4(material, "u_model", model);
-
     nsMaterial_set_uniform_matrix4(material, "u_view", view);
 
+    nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), 1280.0f/720.0f, 0.1f, 1000.0f);
     nsMaterial_set_uniform_matrix4(material, "u_projection", projection);
 
     nsVector3 camera_pos = NS_VECTOR3(0.0f, 0.0f, 13.0f);
@@ -267,8 +165,6 @@ void nsApp_run(nsApp *app) {
     float camera_vertical_sensitivity = 0.1f;
 
     SDL_SetRelativeMouseMode(true);
-
-    float a = 0.0;
 
     GLVersionInfo glversion = fetch_opengl_version();
     printf(
@@ -317,12 +213,12 @@ void nsApp_run(nsApp *app) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         {
-            a += 1.0;
-            model.m[5] = ns_cos(NS_RADIANS(a));
-            model.m[6] = ns_sin(NS_RADIANS(a));
-            model.m[9] = -ns_sin(NS_RADIANS(a));
-            model.m[10] = ns_cos(NS_RADIANS(a));
-            nsMaterial_set_uniform_matrix4(material, "u_model", model);
+            nsVector3 rotation = nsModel_get_euler_angles(model0);
+            rotation.x += 0.01f;
+            rotation.y += 0.02f;
+            rotation.z += 0.04f;
+            nsModel_set_euler_angles(model0, rotation);
+            
 
             int mouse_rx, mouse_ry;
             SDL_GetRelativeMouseState(&mouse_rx, &mouse_ry);
@@ -363,13 +259,14 @@ void nsApp_run(nsApp *app) {
             glClear(GL_COLOR_BUFFER_BIT);
             glClear(GL_DEPTH_BUFFER_BIT);
             
-            nsMesh_render(mesh);
+            nsModel_render(model0);
+            nsModel_render(ground);
         }
 
         SDL_GL_SwapWindow(app->window);
     }
 
-    nsMesh_free(mesh);
+    nsModel_free(model0);
 }
 
 void nsApp_stop(nsApp *app) {

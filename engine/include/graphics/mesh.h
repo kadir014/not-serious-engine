@@ -25,8 +25,7 @@
 
 
 /**
- * @brief Abstract type that represents a triangular polygon mesh and manage
- * buffers for rendering.
+ * @brief Abstract type that manages a collection of buffers and materials.
  */
 typedef struct {
     ns_u32 vao_id; /**< GL vertex array object. */
@@ -54,6 +53,18 @@ nsMesh *nsMesh_new(nsMaterial *material);
  * @param mesh Mesh to free
  */
 void nsMesh_free(nsMesh *mesh);
+
+/**
+ * @brief Factory function for a mesh initiated with a cube geometry.
+ * 
+ * Returns `NULL` on error. Use @ref ns_get_error to get more information.
+ * 
+ * @param material 
+ * @return nsMesh *
+ */
+nsMesh *nsMesh_from_cube(nsMaterial *material, float width, float height, float length);
+
+nsMesh *nsMesh_from_plane(nsMaterial *material, float width, float height);
 
 void nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer);
 
