@@ -141,17 +141,39 @@ void nsApp_run(nsApp *app) {
         return;
     }
 
+    nsMaterial_set_uniform_vector3(material, "point_lights[0].position", NS_VECTOR3(1.0f, 1.0f, 7.0f));
+    nsMaterial_set_uniform_vector3(material, "point_lights[0].color", NS_VECTOR3(1.0f, 0.0f, 1.0f));
+    nsMaterial_set_uniform_float(material, "point_lights[0].ambient_intensity", 0.1f);
+
+    nsMaterial_set_uniform_vector3(material, "point_lights[1].position", NS_VECTOR3(1.0f, 1.0f, -7.0f));
+    nsMaterial_set_uniform_vector3(material, "point_lights[1].color", NS_VECTOR3(1.0f, 1.0f, 0.0f));
+    nsMaterial_set_uniform_float(material, "point_lights[1].ambient_intensity", 0.1f);
+
+    nsMaterial_set_uniform_vector3(material, "point_lights[2].position", NS_VECTOR3(1.0f, 1.0f, -7.0f));
+    nsMaterial_set_uniform_vector3(material, "point_lights[2].color", NS_VECTOR3(0.0f, 1.0f, 1.0f));
+    nsMaterial_set_uniform_float(material, "point_lights[2].ambient_intensity", 0.1f);
+
+    nsMaterial_set_uniform_int(material, "point_lights_count", 3);
+
+    nsModel *light0 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f));
+    nsModel_set_position(light0, NS_VECTOR3(1.0f, 1.0f, 7.0f));
+    nsModel *light1 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f));
+    nsModel_set_position(light1, NS_VECTOR3(1.0f, 1.0f, -7.0f));
+    nsModel *light2 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f));
+    nsModel_set_position(light2, NS_VECTOR3(1.0f, 1.0f, -7.0f));
+
     nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0));
 
     nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0));
-    nsModel_set_scale(ground, NS_VECTOR3(15.0, 1.0, 15.0));
+    nsModel_set_scale(ground, NS_VECTOR3(1500.0, 1.0, 1500.0));
     nsModel_set_position(ground, NS_VECTOR3(0.0, -4.0, 0.0));
 
     nsMatrix4 view = nsMatrix4_identity;
     view = nsMatrix4_translate(view, NS_VECTOR3(0.0f, 0.0f, -3.0f));
     nsMaterial_set_uniform_matrix4(material, "u_view", view);
 
-    nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), 1280.0f/720.0f, 0.1f, 1000.0f);
+    float aspect = (float)app->app_def.window_width / (float)app->app_def.window_height;
+    nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), aspect, 0.1f, 1000.0f);
     nsMaterial_set_uniform_matrix4(material, "u_projection", projection);
 
     nsVector3 camera_pos = NS_VECTOR3(0.0f, 0.0f, 13.0f);
@@ -182,7 +204,7 @@ void nsApp_run(nsApp *app) {
         SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL,
         glversion.major, glversion.minor, glversion.profile_str
     );
-
+    float a = 0.0f;
     while (app->is_running) {
         // TODO: clock tick
         
@@ -257,8 +279,45 @@ void nsApp_run(nsApp *app) {
             glClear(GL_COLOR_BUFFER_BIT);
             glClear(GL_DEPTH_BUFFER_BIT);
             
+            nsMaterial_set_uniform_vector3(material, "material.ambient", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+            nsMaterial_set_uniform_vector3(material, "material.diffuse", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(0.0f, 0.0f, 0.0f));
+            nsMaterial_set_uniform_vector3(material, "material.specular", NS_VECTOR3(0.5f, 0.5f, 0.5f));
+            nsMaterial_set_uniform_float(material, "material.shininess", 64.0f);
+            
             nsModel_render(model0);
             nsModel_render(ground);
+
+            nsMaterial_set_uniform_vector3(material, "material.ambient", NS_VECTOR3(0.0f, 0.0f, 0.0f));
+            nsMaterial_set_uniform_vector3(material, "material.diffuse", NS_VECTOR3(0.0f, 0.0f, 0.0f));
+            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+            nsMaterial_set_uniform_vector3(material, "material.specular", NS_VECTOR3(0.0f, 0.0f, 0.0f));
+            nsMaterial_set_uniform_float(material, "material.shininess", 1.0f);
+
+
+            a += 0.01f;
+            nsVector3 lightpos0 = NS_VECTOR3(ns_cos(a) * 3.0, ns_cos(a) * 3.0, ns_sin(a) * 3.0);
+            nsVector3 lightpos1 = NS_VECTOR3(ns_cos(-a) * 3.0, ns_sin(a) * 3.0, ns_sin(-a) * 3.0);
+            nsVector3 lightpos2 = NS_VECTOR3(ns_sin(a) * 3.0, ns_sin(-a + 0.3) * 3.0, ns_cos(-a) * 3.0);
+
+            nsModel_set_position(light0, lightpos0);
+            nsMaterial_set_uniform_vector3(material, "point_lights[0].position", lightpos0);
+
+            nsModel_set_position(light1, lightpos1);
+            nsMaterial_set_uniform_vector3(material, "point_lights[1].position", lightpos1);
+
+            nsModel_set_position(light2, lightpos2);
+            nsMaterial_set_uniform_vector3(material, "point_lights[2].position", lightpos2);
+
+
+            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 0.0f, 1.0f));
+            nsModel_render(light0);
+
+            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 1.0f, 0.0f));
+            nsModel_render(light1);
+
+            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(0.0f, 1.0f, 1.0f));
+            nsModel_render(light2);
         }
 
         SDL_GL_SwapWindow(app->window);

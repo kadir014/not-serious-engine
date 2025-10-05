@@ -206,3 +206,21 @@ void nsMaterial_set_uniform_matrix4(
         glUniformMatrix4fv(uniform->location, 1, GL_FALSE, mat.m);
     }
 }
+
+nsMaterial_set_uniform_float(nsMaterial *material, char *name, float value) {
+    nsUniform *uniform = nsMaterial_get_uniform(material, name);
+
+    if (uniform) {
+        glUseProgram(material->program_id);
+        glUniform1f(uniform->location, value);
+    }
+}
+
+nsMaterial_set_uniform_int(nsMaterial *material, char *name, int value) {
+    nsUniform *uniform = nsMaterial_get_uniform(material, name);
+
+    if (uniform) {
+        glUseProgram(material->program_id);
+        glUniform1i(uniform->location, value);
+    }
+}

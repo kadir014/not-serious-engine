@@ -17,30 +17,84 @@ in vec3 v_frag_pos;
 
 uniform vec3 u_view_pos;
 
-void main() {
-    vec3 light_pos = vec3(0.0, 10.0, 10.0);
-    vec3 light_color = vec3(1.0, 1.0, 1.0);
 
-    vec3 albedo = vec3(1.0, 0.3, 0.7);
+/*
+    Phong surface material.
+*/
+struct PhongMaterial {
+    vec3 ambient; // Color the surface reflects under ambient lighting.
+    vec3 diffuse; // Color the surface reflects under diffuse (direct) lighting.
+    vec3 emissive; // Color the surface emits (self-illumination).
+    vec3 specular; // Color of the specular highlight on the surface.
+    float shininess; // Intensity of the specular highlight.
+};
 
-    vec3 light_dir = normalize(light_pos - v_frag_pos);
+uniform PhongMaterial material;
+
+
+/*
+    Basic point light.
+*/
+struct PointLight {
+    vec3 position; // Position of light source in world space.
+    vec3 color; // Color of the light.
+    float ambient_intensity; // Ambient intensity of the light.
+};
+
+#define N_POINT_LIGHTS 8
+uniform PointLight point_lights[N_POINT_LIGHTS];
+uniform int point_lights_count;
+
+
+/*
+    Calculate point light radiance at given frag position.
+*/
+vec3 point_light_radiance(
+    PointLight light,
+    vec3 normal,
+    vec3 frag_pos,
+    vec3 view_dir
+) {
+    float light_constant = 1.0;
+    float light_linear = 0.09;
+    float light_quadratic = 0.032;
+
+    vec3 light_delta = light.position - frag_pos;
+    vec3 light_dir = normalize(light_delta);
+    float light_dist = length(light_delta);
+
+    // Fatt = 1 / (Kc + Kl * d + Kq * d^2)
+    float attenuation = 1.0 / (light_constant + light_linear * light_dist + light_quadratic * (light_dist * light_dist));  
 
     // Ambient lighting
-    float ambient_intensity = 0.1;
-    vec3 ambient = ambient_intensity * light_color;
+    vec3 ambient = material.ambient * (light.color * light.ambient_intensity);
 
     // Diffuse lighting
-    float diffuse_strength = max(dot(v_normal, light_dir), 0.0);
-    vec3 diffuse = diffuse_strength * light_color;
+    float diffuse_strength = max(dot(normal, light_dir), 0.0);
+    vec3 diffuse = (diffuse_strength * material.diffuse) * light.color;
 
     // Specular lighting
-    int specular_power = 64;
-    float specular_intensity = 0.7;
-    vec3 view_dir = normalize(u_view_pos - v_frag_pos);
-    vec3 reflect_dir = reflect(-light_dir, v_normal);
-    float specular_strength = pow(max(dot(view_dir, reflect_dir), 0.0), specular_power);
-    vec3 specular = specular_strength * light_color * specular_intensity;
+    vec3 reflect_dir = reflect(-light_dir, normal);
+    float specular_strength = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
+    vec3 specular = (specular_strength * material.specular) * light.color;
 
-    vec3 final_color = (ambient + diffuse + specular) * albedo;
-    out_color = vec4(final_color, 1.0);
+    return attenuation * (ambient + diffuse + specular) + material.emissive;
+}
+
+
+void main() {
+    vec3 view_dir = normalize(u_view_pos - v_frag_pos);
+
+    vec3 radiance = vec3(0.0);
+
+    for (int i = 0; i < point_lights_count; i++) {
+        radiance += point_light_radiance(
+            point_lights[i],
+            v_normal,
+            v_frag_pos,
+            view_dir
+        );
+    }
+
+    out_color = vec4(radiance, 1.0);
 }
