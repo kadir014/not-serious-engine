@@ -62,11 +62,33 @@ void nsMesh_free(nsMesh *mesh);
  * @param material 
  * @return nsMesh *
  */
-nsMesh *nsMesh_from_cube(nsMaterial *material, float width, float height, float length);
+nsMesh *nsMesh_from_cube(
+    nsMaterial *material,
+    float width,
+    float height,
+    float length,
+    float tiling_x,
+    float tiling_y
+);
 
-nsMesh *nsMesh_from_plane(nsMaterial *material, float width, float height);
+nsMesh *nsMesh_from_plane(
+    nsMaterial *material,
+    float width,
+    float length,
+    float tiling_x,
+    float tiling_y
+);
 
-void nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer);
+/**
+ * @brief Push new buffer to the mesh.
+ * 
+ * Returns non-zero on error. Use @ref ns_get_error to get more information.
+ * 
+ * @param mesh Mesh
+ * @param buffer New buffer
+ * @return int 
+ */
+int nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer);
 
 void nsMesh_initialize(nsMesh *mesh);
 

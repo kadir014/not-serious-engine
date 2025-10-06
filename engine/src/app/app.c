@@ -15,6 +15,7 @@
 #include "engine/include/graphics/material.h"
 #include "engine/include/graphics/mesh.h"
 #include "engine/include/graphics/buffer.h"
+#include "engine/include/graphics/texture.h"
 #include "engine/include/model/model.h"
 
 
@@ -37,12 +38,18 @@ nsApp *nsApp_new(nsAppDefinition app_def) {
         return NULL;
     }
 
+    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
+        ns_throw_error(IMG_GetError(), 0, nsErrorSeverity_FATAL);
+        SDL_Quit();
+        return NULL;
+    }
+
     //TODO: Request version and multisampling
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
     app->window = SDL_CreateWindow(
         app_def.window_title,
@@ -54,6 +61,7 @@ nsApp *nsApp_new(nsAppDefinition app_def) {
     );
     if (!app->window) {
         ns_throw_error(SDL_GetError(), 0, nsErrorSeverity_FATAL);
+        IMG_Quit();
         SDL_Quit();
         return NULL;
     }
@@ -62,6 +70,7 @@ nsApp *nsApp_new(nsAppDefinition app_def) {
     if (!app->gl_ctx) {
         ns_throw_error(SDL_GetError(), 0, nsErrorSeverity_FATAL);
         SDL_DestroyWindow(app->window);
+        IMG_Quit();
         SDL_Quit();
         return NULL;
     }
@@ -71,6 +80,7 @@ nsApp *nsApp_new(nsAppDefinition app_def) {
         ns_throw_error(SDL_GetError(), 0, nsErrorSeverity_FATAL);
         SDL_GL_DeleteContext(app->gl_ctx);
         SDL_DestroyWindow(app->window);
+        IMG_Quit();
         SDL_Quit();
         return NULL;
     }
@@ -89,6 +99,7 @@ void nsApp_free(nsApp *app) {
 
     SDL_GL_DeleteContext(app->gl_ctx);
     SDL_DestroyWindow(app->window);
+    IMG_Quit();
     SDL_Quit();
 
     NS_FREE(app);
@@ -153,18 +164,25 @@ void nsApp_run(nsApp *app) {
     nsMaterial_set_uniform_vector3(material, "point_lights[2].color", NS_VECTOR3(0.0f, 1.0f, 1.0f));
     nsMaterial_set_uniform_float(material, "point_lights[2].ambient_intensity", 0.1f);
 
-    nsMaterial_set_uniform_int(material, "point_lights_count", 3);
+    nsMaterial_set_uniform_vector3(material, "point_lights[3].position", NS_VECTOR3(0.0f, 3.0f, 0.0f));
+    nsMaterial_set_uniform_vector3(material, "point_lights[3].color", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+    nsMaterial_set_uniform_float(material, "point_lights[3].ambient_intensity", 0.1f);
 
-    nsModel *light0 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f));
+    nsMaterial_set_uniform_int(material, "point_lights_count", 4);
+
+    nsTexture *tex = nsTexture_new();
+    nsTexture_write_from_file(tex, "../game/assets/textures/uv_debug.png");
+
+    nsModel *light0 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f, 1.0f, 1.0f));
     nsModel_set_position(light0, NS_VECTOR3(1.0f, 1.0f, 7.0f));
-    nsModel *light1 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f));
+    nsModel *light1 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f, 1.0f, 1.0f));
     nsModel_set_position(light1, NS_VECTOR3(1.0f, 1.0f, -7.0f));
-    nsModel *light2 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f));
+    nsModel *light2 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f, 1.0f, 1.0f));
     nsModel_set_position(light2, NS_VECTOR3(1.0f, 1.0f, -7.0f));
 
-    nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0));
+    nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0, 1.0f, 1.0f));
 
-    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0));
+    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0, 1.0f, 1.0f));
     nsModel_set_scale(ground, NS_VECTOR3(1500.0, 1.0, 1500.0));
     nsModel_set_position(ground, NS_VECTOR3(0.0, -4.0, 0.0));
 
@@ -192,16 +210,18 @@ void nsApp_run(nsApp *app) {
     printf(
         "Not-Serious-Engine %d.%d.%d\n"
         "========================\n"
-        "Compiler: %s %s\n"
-        "Platform: %s\n"
-        "Arch:     %s\n"
-        "SDL:      %d.%d.%d\n"
-        "OpenGL:   %d.%d %s\n",
+        "Compiler:  %s %s\n"
+        "Platform:  %s\n"
+        "Arch:      %s\n"
+        "SDL:       %d.%d.%d\n"
+        "SDL_image: %d.%d.%d\n"
+        "OpenGL:    %d.%d %s\n",
         NS_ENGINE_VERSION_MAJOR, NS_ENGINE_VERSION_MINOR, NS_ENGINE_VERSION_PATCH,
         NS_COMPILER_as_string(), NS_COMPILER_VERSION_STR,
         NS_PLATFORM_as_string(),
         NS_ARCH_as_string(),
         SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL,
+        SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL,
         glversion.major, glversion.minor, glversion.profile_str
     );
     float a = 0.0f;

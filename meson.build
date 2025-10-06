@@ -28,14 +28,23 @@ else
 endif
 
 
+python = find_program('python3', 'python')
+
+r = run_command(python, 'scripts/install_wraps.py')
+if r.returncode() != 0
+    error('install_wraps.py script failed.\n', r.stderr())
+endif
+
+
 sdl2_dep = dependency('sdl2')
+sdl2_image_dep = dependency('sdl2_image')
 opengl_dep = dependency('gl')
 
 if compiler.get_id() == 'msvc'
     sdl2_main_dep = dependency('sdl2main')
-    deps = [sdl2_dep, sdl2_main_dep, opengl_dep]
+    deps = [sdl2_dep, sdl2_main_dep, sdl2_image_dep, opengl_dep]
 else
-    deps = [sdl2_dep, opengl_dep]
+    deps = [sdl2_dep, sdl2_image_dep, opengl_dep]
 endif
 
 
@@ -47,6 +56,7 @@ engine_src = [
     'engine/src/graphics/mesh.c',
     'engine/src/graphics/buffer.c',
     'engine/src/graphics/uniform.c',
+    'engine/src/graphics/texture.c',
     'engine/src/model/model.c',
     'engine/src/app/app.c'
 ]
@@ -68,13 +78,6 @@ libnsengine = library(
     install: true
 )
 
-
-python = find_program('python3', 'python')
-
-r = run_command(python, 'scripts/install_wraps.py')
-if r.returncode() != 0
-    error('install_wraps.py script failed.\n', r.stderr())
-endif
 
 game_src = [
     'game/src/main.c',

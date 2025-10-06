@@ -14,8 +14,11 @@ out vec4 out_color;
 
 in vec3 v_normal;
 in vec3 v_frag_pos;
+in vec2 v_uv;
 
 uniform vec3 u_view_pos;
+
+uniform sampler2D s_diffuse_map;
 
 
 /*
@@ -52,6 +55,7 @@ uniform int point_lights_count;
 vec3 point_light_radiance(
     PointLight light,
     vec3 normal,
+    vec2 uv,
     vec3 frag_pos,
     vec3 view_dir
 ) {
@@ -71,7 +75,9 @@ vec3 point_light_radiance(
 
     // Diffuse lighting
     float diffuse_strength = max(dot(normal, light_dir), 0.0);
-    vec3 diffuse = (diffuse_strength * material.diffuse) * light.color;
+    vec3 diffuse_map_color = texture(s_diffuse_map, uv).rgb;
+    vec3 diffuse_mat_color = material.diffuse;
+    vec3 diffuse = (diffuse_strength * (diffuse_map_color * diffuse_mat_color)) * light.color;
 
     // Specular lighting
     vec3 reflect_dir = reflect(-light_dir, normal);
@@ -91,6 +97,7 @@ void main() {
         radiance += point_light_radiance(
             point_lights[i],
             v_normal,
+            v_uv,
             v_frag_pos,
             view_dir
         );

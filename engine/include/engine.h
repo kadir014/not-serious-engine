@@ -34,6 +34,7 @@
 #include "engine/include/graphics/mesh.h"
 #include "engine/include/graphics/buffer.h"
 #include "engine/include/graphics/uniform.h"
+#include "engine/include/graphics/texture.h"
 
 #include "engine/include/model/model.h"
 

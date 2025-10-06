@@ -49,7 +49,14 @@ void nsMesh_free(nsMesh *mesh) {
     NS_FREE(mesh);
 }
 
-nsMesh *nsMesh_from_cube(nsMaterial *material, float width, float height, float length) {
+nsMesh *nsMesh_from_cube(
+    nsMaterial *material,
+    float width,
+    float height,
+    float length,
+    float tiling_x,
+    float tiling_y
+) {
     float width_h = width * 0.5f;
     float height_h = height * 0.5f;
     float length_h = length * 0.5f;
@@ -99,23 +106,67 @@ nsMesh *nsMesh_from_cube(nsMaterial *material, float width, float height, float 
     };
 
     float normals[108] = {
-         0, 0, 1,  0, 0, 1,  0, 0, 1,
-         0, 0, 1,  0, 0, 1,  0, 0, 1,
+         0.0f, 0.0f, 1.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
+         0.0f, 0.0f, 1.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, 1.0f,
 
-         0, 0, -1, 0, 0, -1, 0, 0, -1,
-         0, 0, -1, 0, 0, -1, 0, 0, -1,
+         0.0f, 0.0f, -1.0f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f, -1.0f,
+         0.0f, 0.0f, -1.0f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f, -1.0f,
 
-        -1, 0, 0, -1, 0, 0, -1, 0, 0,
-        -1, 0, 0, -1, 0, 0, -1, 0, 0,
+        -1.0f, 0.0f, 0.0f,  -1.0f, 0.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,  -1.0f, 0.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
 
-         1, 0, 0,  1, 0, 0,  1, 0, 0,
-         1, 0, 0,  1, 0, 0,  1, 0, 0,
+         1.0f, 0.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+         1.0f, 0.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
 
-         0, 1, 0,  0, 1, 0,  0, 1, 0,
-         0, 1, 0,  0, 1, 0,  0, 1, 0,
+         0.0f, 1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f, 0.0f,
 
-         0, -1, 0, 0, -1, 0, 0, -1, 0,
-         0, -1, 0, 0, -1, 0, 0, -1, 0
+         0.0f, -1.0f, 0.0f,  0.0f, -1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+         0.0f, -1.0f, 0.0f,  0.0f, -1.0f, 0.0f,  0.0f, -1.0f, 0.0f
+    };
+
+    float uvs[72] = {
+        0.0f,     0.0f,
+        tiling_x, 0.0f,
+        tiling_x, tiling_y,
+        0.0f,     0.0f,
+        tiling_x, tiling_y,
+        0.0f,     tiling_y,
+
+        0.0f,     0.0f,
+        0.0f,     tiling_y,
+        tiling_x, tiling_y,
+        0.0f,     0.0f,
+        tiling_x, tiling_y,
+        tiling_x, 0.0f,
+
+        0.0f,     0.0f,
+        tiling_x, 0.0f,
+        tiling_x, tiling_y,
+        0.0f,     0.0f,
+        tiling_x, tiling_y,
+        0.0f,     tiling_y,
+
+        0.0f,     0.0f,
+        0.0f,     tiling_y,
+        tiling_x, tiling_y,
+        0.0f,      0.0f,
+        tiling_x, tiling_y,
+        tiling_x, 0.0f,
+
+        0.0f,     0.0f,
+        0.0f,     tiling_y,
+        tiling_x, tiling_y,
+        0.0f,     0.0f,
+        tiling_x, tiling_y,
+        tiling_x, 0.0f,
+
+        0.0f,     0.0f,
+        tiling_x, 0.0f,
+        tiling_x, tiling_y,
+        0.0f,     0.0f,
+        tiling_x, tiling_y,
+        0.0f,     tiling_y
     };
 
     nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
@@ -124,15 +175,25 @@ nsMesh *nsMesh_from_cube(nsMaterial *material, float width, float height, float 
     nsBuffer *normals_buffer = nsBuffer_new(1, 3);
     nsBuffer_write(normals_buffer, normals, 36);
 
+    nsBuffer *uvs_buffer = nsBuffer_new(2, 2);
+    nsBuffer_write(uvs_buffer, uvs, 36);
+
     nsMesh *mesh = nsMesh_new(material);
     nsMesh_push_buffer(mesh, vertices_buffer);
     nsMesh_push_buffer(mesh, normals_buffer);
+    nsMesh_push_buffer(mesh, uvs_buffer);
     nsMesh_initialize(mesh);
 
     return mesh;
 }
 
-nsMesh *nsMesh_from_plane(nsMaterial *material, float width, float length) {
+nsMesh *nsMesh_from_plane(
+    nsMaterial *material,
+    float width,
+    float length,
+    float tiling_x,
+    float tiling_y
+) {
     float width_h = width * 0.5f;
     float length_h = length * 0.5f;
 
@@ -146,8 +207,17 @@ nsMesh *nsMesh_from_plane(nsMaterial *material, float width, float length) {
     };
 
     float normals[18] = {
-        0, 1, 0,  0, 1, 0,  0, 1, 0,
-        0, 1, 0,  0, 1, 0,  0, 1, 0,
+        0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    };
+
+    float uvs[12] = {
+        0.0f,     0.0f,
+        0.0f,     tiling_y,
+        tiling_x, tiling_y,
+        0.0f,     0.0f,
+        tiling_x, tiling_y,
+        tiling_x, 0.0f,
     };
 
     nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
@@ -156,16 +226,20 @@ nsMesh *nsMesh_from_plane(nsMaterial *material, float width, float length) {
     nsBuffer *normals_buffer = nsBuffer_new(1, 3);
     nsBuffer_write(normals_buffer, normals, 6);
 
+    nsBuffer *uvs_buffer = nsBuffer_new(2, 2);
+    nsBuffer_write(uvs_buffer, uvs, 6);
+
     nsMesh *mesh = nsMesh_new(material);
     nsMesh_push_buffer(mesh, vertices_buffer);
     nsMesh_push_buffer(mesh, normals_buffer);
+    nsMesh_push_buffer(mesh, uvs_buffer);
     nsMesh_initialize(mesh);
 
     return mesh;
 }
 
-void nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer) {
-    nsArray_add(mesh->buffers, buffer);
+int nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer) {
+    return nsArray_add(mesh->buffers, buffer);
 }
 
 void nsMesh_initialize(nsMesh *mesh) {

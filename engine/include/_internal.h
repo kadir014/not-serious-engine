@@ -27,6 +27,7 @@
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include "engine/include/core/types.h"
 #include "engine/include/core/error.h"
