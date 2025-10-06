@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file core/types.h
+ * @brief Type definitions.
+ */
 #ifndef _NS_TYPES_H
 #define _NS_TYPES_H
 
 #include <stdint.h>
-
-
-/**
- * @file core/types.h
- * 
- * @brief Type definitions.
- */
 
 
 typedef int8_t ns_i8;

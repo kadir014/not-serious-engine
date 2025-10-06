@@ -8,15 +8,15 @@
 
 */
 
-#ifndef _NS_PLATFORM_H
-#define _NS_PLATFORM_H
-
-
 /**
  * @file core/platform.h
- * 
  * @brief Platform identification.
+ * 
+ * All macros in this header uses preprocessors to identify platform specs.
+ * Architecture related ones are usually not defined in MSVC.
  */
+#ifndef _NS_PLATFORM_H
+#define _NS_PLATFORM_H
 
 
 #define __NS_STR(x) #x

@@ -8,16 +8,14 @@
 
 */
 
-#ifndef _NS_API_H
-#define _NS_API_H
-
-
 /**
  * @file engine.h
- * 
  * @brief Main API include file for Not-Serious-Engine.
+ * 
+ * Include this header in your project to include all interface.
  */
-
+#ifndef _NS_API_H
+#define _NS_API_H
  
 #include "engine/include/core/error.h"
 #include "engine/include/core/types.h"

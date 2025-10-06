@@ -8,18 +8,15 @@
 
 */
 
+/**
+ * @file math/matrix.h
+ * @brief Matrix types and math.
+ */
 #ifndef _NS_MATRIX_H
 #define _NS_MATRIX_H
 
 #include "engine/include/math/math.h"
 #include "engine/include/math/vector.h"
-
-
-/**
- * @file math/matrix.h
- * 
- * @brief Matrix types and math.
- */
 
 
 /**

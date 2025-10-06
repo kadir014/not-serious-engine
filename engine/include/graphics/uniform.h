@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file graphics/uniform.h
+ * @brief Uniform storage handle.
+ */
 #ifndef _NS_UNIFORM_H
 #define _NS_UNIFORM_H
 
 #include "engine/include/_internal.h"
-
-
-/**
- * @file graphics/uniform.h
- * 
- * @brief Uniform storage buffer.
- */
 
 
 /**

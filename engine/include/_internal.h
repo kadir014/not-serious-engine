@@ -8,16 +8,14 @@
 
 */
 
-#ifndef _NS_INTERNAL_H
-#define _NS_INTERNAL_H
-
-
 /**
  * @file _internal.h
- * 
  * @brief Internal API header.
+ * 
+ * Defines internal stuff used all over the engine.
  */
-
+#ifndef _NS_INTERNAL_H
+#define _NS_INTERNAL_H
 
 #include <stdio.h>
 #include <stdlib.h>

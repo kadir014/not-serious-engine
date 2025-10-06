@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file core/io.h
+ * @brief Basic I/O operations.
+ */
 #ifndef _NS_IO_H
 #define _NS_IO_H
 
 #include <stdio.h>
-
-
-/**
- * @file core/io.h
- * 
- * @brief Basic I/O operations.
- */
 
 
 /**

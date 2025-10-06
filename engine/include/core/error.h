@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file core/error.h
+ * @brief Basic error handling & logging.
+ */
 #ifndef _NS_ERROR_H
 #define _NS_ERROR_H
 
 #include <stdio.h>
-
-
-/**
- * @file core/error.h
- * 
- * @brief Basic error handling & logging.
- */
 
 
 /**

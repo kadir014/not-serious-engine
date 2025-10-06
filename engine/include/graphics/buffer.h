@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file graphics/buffer.h
+ * @brief Buffer type.
+ */
 #ifndef _NS_BUFFER_H
 #define _NS_BUFFER_H
 
 #include "engine/include/_internal.h"
-
-
-/**
- * @file graphics/buffer.h
- * 
- * @brief Buffer type.
- */
 
 
 /**

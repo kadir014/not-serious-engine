@@ -8,15 +8,12 @@
 
 */
 
-#ifndef _NS_VERSION_H
-#define _NS_VERSION_H
-
-
 /**
  * @file core/version.h
- * 
  * @brief Not-Serious-Engine versioning.
  */
+#ifndef _NS_VERSION_H
+#define _NS_VERSION_H
 
 
 #define NS_ENGINE_VERSION_MAJOR 0

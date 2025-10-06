@@ -8,6 +8,10 @@
 
 */
 
+/**
+ * @file graphics/material.h
+ * @brief Abstract material type.
+ */
 #ifndef _NS_MATERIAL_H
 #define _NS_MATERIAL_H
 
@@ -16,13 +20,6 @@
 #include "engine/include/core/array.h"
 #include "engine/include/math/vector.h"
 #include "engine/include/math/matrix.h"
-
-
-/**
- * @file graphics/material.h
- * 
- * @brief Abstract material type.
- */
 
 
 /**

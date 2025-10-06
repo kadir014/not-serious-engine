@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file math/vector.h
+ * @brief 3D vector type and math.
+ */
 #ifndef _NS_VECTOR_H
 #define _NS_VECTOR_H
 
 #include "engine/include/math/math.h"
-
-
-/**
- * @file math/vector.h
- * 
- * @brief 3D vector type and math.
- */
 
 
 /**

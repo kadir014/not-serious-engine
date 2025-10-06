@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file math/math.h
+ * @brief Generic mathematical constants and definitions.
+ */
 #ifndef _NS_MATH_H
 #define _NS_MATH_H
 
 #include <math.h>
-
-
-/**
- * @file math/math.h
- * 
- * @brief Generic mathematical constants and definitions.
- */
 
 
 #define NS_PI 3.141592653589793238462643383279502884f

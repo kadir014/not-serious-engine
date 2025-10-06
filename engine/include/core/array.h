@@ -8,6 +8,10 @@
 
 */
 
+/**
+ * @file core/array.h
+ * @brief Type-generic dynamically growing array.
+ */
 #ifndef _NS_ARRAY_H
 #define _NS_ARRAY_H
 
@@ -15,14 +19,7 @@
 
 
 /**
- * @file core/array.h
- * 
- * @brief Type-generic dynamically growing array implementation.
- */
-
-
-/**
- * @brief Type-generic dynamically growing array implementation.
+ * @brief Type-generic dynamically growing array.
  */
 typedef struct {
     size_t size; /**< Length of the array. */
@@ -78,7 +75,9 @@ void nsArray_free_each(nsArray *array, nsArray_free_each_callback free_func);
 int nsArray_add(nsArray *array, void *elem);
 
 /**
- * @brief Remove element by index from array and return the element. Returns `NULL` if failed.
+ * @brief Remove element by index from array and return the element.
+ * 
+ * Returns `NULL` if removal failed.
  * 
  * @note The array is not sorted after removal, meaning the array gets slightly randomized every remove call.
  * 
@@ -89,7 +88,9 @@ int nsArray_add(nsArray *array, void *elem);
 void *nsArray_pop(nsArray *array, size_t index);
 
 /**
- * @brief Remove element from array and return the index. Returns `-1` if failed.
+ * @brief Remove element from array and return the index.
+ * 
+ * Returns `(size_t)(-1)` if removal failed.
  * 
  * @note The array is not sorted after removal, meaning the array gets slightly randomized every remove call.
  * 

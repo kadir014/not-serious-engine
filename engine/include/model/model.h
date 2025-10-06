@@ -8,6 +8,10 @@
 
 */
 
+/**
+ * @file model/model.h
+ * @brief Model type.
+ */
 #ifndef _NS_MODEL_H
 #define _NS_MODEL_H
 
@@ -15,13 +19,6 @@
 #include "engine/include/math/transform.h"
 #include "engine/include/graphics/mesh.h"
 #include "engine/include/graphics/material.h"
-
-
-/**
- * @file model/model.h
- * 
- * @brief Model type.
- */
 
 
 /**

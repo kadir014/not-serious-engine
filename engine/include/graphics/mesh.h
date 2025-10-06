@@ -8,6 +8,10 @@
 
 */
 
+/**
+ * @file graphics/mesh.h
+ * @brief Abstract mesh type.
+ */
 #ifndef _NS_MESH_H
 #define _NS_MESH_H
 
@@ -15,13 +19,6 @@
 #include "engine/include/core/array.h"
 #include "engine/include/graphics/material.h"
 #include "engine/include/graphics/buffer.h"
-
-
-/**
- * @file graphics/mesh.h
- * 
- * @brief Abstract mesh type.
- */
 
 
 /**

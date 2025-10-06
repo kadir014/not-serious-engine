@@ -8,17 +8,14 @@
 
 */
 
+/**
+ * @file graphics/texture.h
+ * @brief Texture type.
+ */
 #ifndef _NS_TEXTURE_H
 #define _NS_TEXTURE_H
 
 #include "engine/include/_internal.h"
-
-
-/**
- * @file graphics/texture.h
- * 
- * @brief Texture type.
- */
 
 
 /**

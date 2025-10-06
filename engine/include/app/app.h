@@ -11,14 +11,11 @@
 #ifndef _NS_APP_H
 #define _NS_APP_H
 
-#include "engine/include/_internal.h"
-
-
 /**
  * @file app/app.h
- * 
  * @brief Top-level application context.
  */
+#include "engine/include/_internal.h"
 
 
 typedef struct {

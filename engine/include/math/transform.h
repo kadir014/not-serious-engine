@@ -8,18 +8,15 @@
 
 */
 
+/**
+ * @file math/transform.h
+ * @brief 3D transform type.
+ */
 #ifndef _NS_TRANSFORM_H
 #define _NS_TRANSFORM_H
 
 #include "engine/include/math/vector.h"
 #include "engine/include/math/matrix.h"
-
-
-/**
- * @file math/transform.h
- * 
- * @brief 3D transform type.
- */
 
 
 /**
