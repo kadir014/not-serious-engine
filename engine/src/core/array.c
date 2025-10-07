@@ -11,13 +11,6 @@
 #include "engine/include/core/array.h"
 
 
-/**
- * @file core/array.c
- * 
- * @brief Type-generic dynamically growing array implementation.
- */
-
-
 nsArray *nsArray_new() {
     nsArray *array = NS_NEW(nsArray);
     NS_MEM_CHECK(array);
@@ -103,7 +96,7 @@ size_t nsArray_remove(nsArray *array, void *elem) {
         }
     }
 
-    return -1;
+    return (size_t)(-1);
 }
 
 int nsArray_clear(nsArray *array, void (free_func)(void *)) {

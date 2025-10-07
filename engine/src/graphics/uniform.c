@@ -11,13 +11,6 @@
 #include "engine/include/graphics/uniform.h"
 
 
-/**
- * @file graphics/uniform.c
- * 
- * @brief Uniform storage buffer.
- */
-
-
 nsUniform *nsUniform_new(char *name, ns_u32 location) {
     nsUniform *uniform = NS_NEW(nsUniform);
     NS_MEM_CHECK(uniform);

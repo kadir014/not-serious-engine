@@ -11,13 +11,6 @@
 #include "engine/include/graphics/mesh.h"
 
 
-/**
- * @file graphics/mesh.c
- * 
- * @brief Abstract mesh type.
- */
-
-
 nsMesh *nsMesh_new(nsMaterial *material) {
     nsMesh *mesh = NS_NEW(nsMesh);
     NS_MEM_CHECK(mesh);

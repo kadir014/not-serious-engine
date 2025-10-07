@@ -12,13 +12,6 @@
 #include "engine/include/core/io.h"
 
 
-/**
- * @file core/io.c
- * 
- * @brief Basic I/O operations.
- */
-
-
 char *ns_read_file_raw(const char *filepath) {
     FILE *file = fopen(filepath, "rb");
     if (!file) {

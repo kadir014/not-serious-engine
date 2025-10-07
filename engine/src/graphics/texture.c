@@ -11,13 +11,6 @@
 #include "engine/include/graphics/texture.h"
 
 
-/**
- * @file graphics/texture.c
- * 
- * @brief Texture type.
- */
-
-
 nsTexture *nsTexture_new() {
     nsTexture *texture = NS_NEW(nsTexture);
     NS_MEM_CHECK(texture);
@@ -43,7 +36,7 @@ void nsTexture_free(nsTexture *texture) {
 }
 
 void nsTexture_write(nsTexture *texture, size_t width, size_t height, ns_u8 *data) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 

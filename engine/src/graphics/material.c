@@ -13,13 +13,6 @@
 
 
 /**
- * @file graphics/material.c
- * 
- * @brief Abstract material type.
- */
-
-
-/**
  * @brief Load shader from string source.
  * 
  * Returns 0 on error, else the shader ID.

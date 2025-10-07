@@ -19,13 +19,6 @@
 #include "engine/include/model/model.h"
 
 
-/**
- * @file app/app.h
- * 
- * @brief Top-level application context.
- */
-
-
 nsApp *nsApp_new(nsAppDefinition app_def) {
     nsApp *app = NS_NEW(nsApp);
     NS_MEM_CHECK(app);
@@ -171,7 +164,7 @@ void nsApp_run(nsApp *app) {
     nsMaterial_set_uniform_int(material, "point_lights_count", 4);
 
     nsTexture *tex = nsTexture_new();
-    nsTexture_write_from_file(tex, "../game/assets/textures/uv_debug.png");
+    nsTexture_write_from_file(tex, "../game/assets/textures/uv_debug_512.png");
 
     nsModel *light0 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f, 1.0f, 1.0f));
     nsModel_set_position(light0, NS_VECTOR3(1.0f, 1.0f, 7.0f));
@@ -182,7 +175,7 @@ void nsApp_run(nsApp *app) {
 
     nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0, 1.0f, 1.0f));
 
-    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0, 1.0f, 1.0f));
+    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0, 10.0f, 10.0f));
     nsModel_set_scale(ground, NS_VECTOR3(1500.0, 1.0, 1500.0));
     nsModel_set_position(ground, NS_VECTOR3(0.0, -4.0, 0.0));
 
