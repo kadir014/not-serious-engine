@@ -31,6 +31,7 @@ char *ns_read_file_raw(const char *filepath) {
     }
 
     fread(buffer, 1, length, file);
+    // Make sure to null-terminate the content
     buffer[length] = '\0';
 
     fclose(file);

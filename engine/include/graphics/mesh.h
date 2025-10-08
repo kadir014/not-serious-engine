@@ -19,6 +19,7 @@
 #include "engine/include/core/array.h"
 #include "engine/include/graphics/material.h"
 #include "engine/include/graphics/buffer.h"
+#include "engine/include/loaders/obj.h"
 
 
 /**
@@ -75,6 +76,8 @@ nsMesh *nsMesh_from_plane(
     float tiling_x,
     float tiling_y
 );
+
+nsMesh *nsMesh_from_obj(nsMaterial *material, nsOBJ *obj);
 
 /**
  * @brief Push new buffer to the mesh.

@@ -231,6 +231,69 @@ nsMesh *nsMesh_from_plane(
     return mesh;
 }
 
+nsMesh *nsMesh_from_obj(nsMaterial *material, nsOBJ *obj) {
+    size_t vertex_n = obj->mesh.tris->size * 3;
+    float *vertices = NS_MALLOC(vertex_n * 3 * sizeof(float));
+    float *normals = NS_MALLOC(vertex_n * 3 * sizeof(float));
+    float *uvs = NS_MALLOC(vertex_n * 2 * sizeof(float));
+
+    // Flatten OBJ triangles so we can write as buffers
+    size_t vertex_i = 0;
+    size_t normal_i = 0;
+    size_t uv_i = 0;
+    for (size_t i = 0; i < obj->mesh.tris->size; i++) {
+        nsOBJTri *tri = nsPool_get(obj->mesh.tris, i);
+        
+        vertices[vertex_i++] = tri->vertices[0].x;
+        vertices[vertex_i++] = tri->vertices[0].y;
+        vertices[vertex_i++] = tri->vertices[0].z;
+        vertices[vertex_i++] = tri->vertices[1].x;
+        vertices[vertex_i++] = tri->vertices[1].y;
+        vertices[vertex_i++] = tri->vertices[1].z;
+        vertices[vertex_i++] = tri->vertices[2].x;
+        vertices[vertex_i++] = tri->vertices[2].y;
+        vertices[vertex_i++] = tri->vertices[2].z;
+
+        normals[normal_i++] = tri->normals[0].x;
+        normals[normal_i++] = tri->normals[0].y;
+        normals[normal_i++] = tri->normals[0].z;
+        normals[normal_i++] = tri->normals[1].x;
+        normals[normal_i++] = tri->normals[1].y;
+        normals[normal_i++] = tri->normals[1].z;
+        normals[normal_i++] = tri->normals[2].x;
+        normals[normal_i++] = tri->normals[2].y;
+        normals[normal_i++] = tri->normals[2].z;
+
+        uvs[uv_i++] = tri->uvs[0].x;
+        uvs[uv_i++] = tri->uvs[0].y;
+        uvs[uv_i++] = tri->uvs[1].x;
+        uvs[uv_i++] = tri->uvs[1].y;
+        uvs[uv_i++] = tri->uvs[2].x;
+        uvs[uv_i++] = tri->uvs[2].y;
+    }
+
+    nsBuffer *vertices_buffer = nsBuffer_new(0, 3);
+    nsBuffer_write(vertices_buffer, vertices, vertex_n);
+
+    nsBuffer *normals_buffer = nsBuffer_new(1, 3);
+    nsBuffer_write(normals_buffer, normals, vertex_n);
+
+    nsBuffer *uvs_buffer = nsBuffer_new(2, 2);
+    nsBuffer_write(uvs_buffer, uvs, vertex_n);
+
+    nsMesh *mesh = nsMesh_new(material);
+    nsMesh_push_buffer(mesh, vertices_buffer);
+    nsMesh_push_buffer(mesh, normals_buffer);
+    nsMesh_push_buffer(mesh, uvs_buffer);
+    nsMesh_initialize(mesh);
+
+    NS_FREE(vertices);
+    NS_FREE(normals);
+    NS_FREE(uvs);
+
+    return mesh;
+}
+
 int nsMesh_push_buffer(nsMesh *mesh, nsBuffer *buffer) {
     return nsArray_add(mesh->buffers, buffer);
 }

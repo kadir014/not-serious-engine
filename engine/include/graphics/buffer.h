@@ -52,7 +52,7 @@ void nsBuffer_free(nsBuffer *buffer);
  * 
  * @param buffer Buffer
  * @param data Array of data
- * @param count Size of the array
+ * @param count Amount of elements
  */
 void nsBuffer_write(nsBuffer *buffer, float *data, size_t count);
 

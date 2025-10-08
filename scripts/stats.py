@@ -61,7 +61,8 @@ EXCLUDE_DIRS = (
     ".vscode",
     "build",
     "subprojects",
-    "external"
+    "external",
+    "assets"
 )
 
 ROOT_DIR = Path.cwd()

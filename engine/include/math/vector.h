@@ -10,7 +10,7 @@
 
 /**
  * @file math/vector.h
- * @brief 3D vector type and math.
+ * @brief Vector types and math.
  */
 #ifndef _NS_VECTOR_H
 #define _NS_VECTOR_H
@@ -74,5 +74,19 @@ static inline nsVector3 nsVector3_cross(nsVector3 a, nsVector3 b) {
         a.x * b.y - a.y * b.x
     );
 }
+
+
+/**
+ * @brief 2D vector type.
+ */
+typedef struct {
+    float x; /**< X component of the vector. */
+    float y; /**< Y component of the vector. */
+} nsVector2;
+
+#define NS_VECTOR2(x, y) ((nsVector2){(x), (y)})
+
+static const nsVector2 nsVector2_zero = {0.0f, 0.0f};
+
 
 #endif

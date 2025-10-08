@@ -22,6 +22,7 @@
 #include "engine/include/core/platform.h"
 #include "engine/include/core/array.h"
 #include "engine/include/core/io.h"
+#include "engine/include/core/profiler.h"
 #include "engine/include/core/version.h"
 
 #include "engine/include/math/math.h"
@@ -35,6 +36,8 @@
 #include "engine/include/graphics/texture.h"
 
 #include "engine/include/model/model.h"
+
+#include "engine/include/loaders/obj.h"
 
 #include "engine/include/app/app.h"
 

@@ -20,9 +20,15 @@
 
 /**
  * @brief Type-generic dynamically growing array.
+ * 
+ * A dynamic array that stores only *pointers* to external data.
+ * It is intended for managing collections of heap-allocated, long-lived objects.
+ * 
+ * The array itself does not own or manage the lifetime of the pointed-to data,
+ * it simply maintains a dense resizable list of references.
  */
 typedef struct {
-    size_t size; /**< Length of the array. */
+    size_t size; /**< Current length of the array. */
     size_t max; /**< Maximum size the array ever reached, this is basically the size of the array on HEAP. */
     float growth_factor; /**< Scaling factor for reallocations. */
     void **data; /**< Array of void pointers. */
@@ -31,12 +37,16 @@ typedef struct {
 /**
  * @brief Create new array.
  * 
+ * Returns `NULL` on error. Use @ref ns_get_error to get more information.
+ * 
  * @return nsArray *
  */
 nsArray *nsArray_new();
 
 /**
  * @brief Create new array with more control than @ref nsArray_new
+ * 
+ * Returns `NULL` on error. Use @ref ns_get_error to get more information.
  * 
  * @param default_capacity Default allocation size at initialization
  * @param growth_factor Scaling factor for reallocations

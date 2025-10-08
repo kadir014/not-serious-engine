@@ -52,12 +52,14 @@ engine_src = [
     'engine/src/core/error.c',
     'engine/src/core/io.c',
     'engine/src/core/array.c',
+    'engine/src/core/pool.c',
     'engine/src/graphics/material.c',
     'engine/src/graphics/mesh.c',
     'engine/src/graphics/buffer.c',
     'engine/src/graphics/uniform.c',
     'engine/src/graphics/texture.c',
     'engine/src/model/model.c',
+    'engine/src/loaders/obj.c',
     'engine/src/app/app.c'
 ]
 
