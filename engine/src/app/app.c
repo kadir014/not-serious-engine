@@ -17,6 +17,22 @@
 #include "engine/include/graphics/buffer.h"
 #include "engine/include/graphics/texture.h"
 #include "engine/include/model/model.h"
+#include "engine/include/loaders/obj.h"
+#include "engine/include/core/pool.h"
+#include "engine/include/core/profiler.h"
+#include "engine/include/scene/camera.h"
+
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_IMPLEMENTATION
+#define NK_SDL_GL3_IMPLEMENTATION
+#include "nuklear/nuklear.h"
+#include "nuklear/nuklear_sdl_gl3.h"
 
 
 nsApp *nsApp_new(nsAppDefinition app_def) {
@@ -80,10 +96,6 @@ nsApp *nsApp_new(nsAppDefinition app_def) {
 
     SDL_GL_SetSwapInterval(app_def.vsync);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-
     return app;
 }
 
@@ -145,26 +157,56 @@ void nsApp_run(nsApp *app) {
         return;
     }
 
-    nsMaterial_set_uniform_vector3(material, "point_lights[0].position", NS_VECTOR3(1.0f, 1.0f, 7.0f));
-    nsMaterial_set_uniform_vector3(material, "point_lights[0].color", NS_VECTOR3(1.0f, 0.0f, 1.0f));
+    struct nk_context *ctx = nk_sdl_init(app->window);
+    struct nk_font_atlas *atlas;
+    nk_sdl_font_stash_begin(&atlas);
+    struct nk_font *font;
+    font = nk_font_atlas_add_default(atlas, 14, NULL);
+    nk_sdl_font_stash_end();
+    nk_style_set_font(ctx, &font->handle);
+
+    nsMaterial_set_uniform_vector3(material, "directional_light.direction", NS_VECTOR3(0.0f, -1.0f, -1.0f));
+    nsMaterial_set_uniform_vector3(material, "directional_light.color", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+    nsMaterial_set_uniform_float(material, "directional_light.ambient_intensity", 0.1f);
+
+    nsMaterial_set_uniform_vector3(material, "point_lights[0].position", NS_VECTOR3(10.0f, 10.0f, 10.0f));
+    nsMaterial_set_uniform_vector3(material, "point_lights[0].color", NS_VECTOR3(1.0f, 1.0f, 1.0f));
     nsMaterial_set_uniform_float(material, "point_lights[0].ambient_intensity", 0.1f);
 
-    nsMaterial_set_uniform_vector3(material, "point_lights[1].position", NS_VECTOR3(1.0f, 1.0f, -7.0f));
-    nsMaterial_set_uniform_vector3(material, "point_lights[1].color", NS_VECTOR3(1.0f, 1.0f, 0.0f));
-    nsMaterial_set_uniform_float(material, "point_lights[1].ambient_intensity", 0.1f);
+    // nsMaterial_set_uniform_vector3(material, "point_lights[1].position", NS_VECTOR3(1.0f, 1.0f, -7.0f));
+    // nsMaterial_set_uniform_vector3(material, "point_lights[1].color", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+    // nsMaterial_set_uniform_float(material, "point_lights[1].ambient_intensity", 0.1f);
 
-    nsMaterial_set_uniform_vector3(material, "point_lights[2].position", NS_VECTOR3(1.0f, 1.0f, -7.0f));
-    nsMaterial_set_uniform_vector3(material, "point_lights[2].color", NS_VECTOR3(0.0f, 1.0f, 1.0f));
-    nsMaterial_set_uniform_float(material, "point_lights[2].ambient_intensity", 0.1f);
+    // nsMaterial_set_uniform_vector3(material, "point_lights[2].position", NS_VECTOR3(1.0f, 1.0f, -7.0f));
+    // nsMaterial_set_uniform_vector3(material, "point_lights[2].color", NS_VECTOR3(0.0f, 1.0f, 1.0f));
+    // nsMaterial_set_uniform_float(material, "point_lights[2].ambient_intensity", 0.1f);
 
-    nsMaterial_set_uniform_vector3(material, "point_lights[3].position", NS_VECTOR3(0.0f, 3.0f, 0.0f));
-    nsMaterial_set_uniform_vector3(material, "point_lights[3].color", NS_VECTOR3(1.0f, 1.0f, 1.0f));
-    nsMaterial_set_uniform_float(material, "point_lights[3].ambient_intensity", 0.1f);
+    // nsMaterial_set_uniform_vector3(material, "point_lights[3].position", NS_VECTOR3(0.0f, 3.0f, 0.0f));
+    // nsMaterial_set_uniform_vector3(material, "point_lights[3].color", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+    // nsMaterial_set_uniform_float(material, "point_lights[3].ambient_intensity", 0.1f);
 
-    nsMaterial_set_uniform_int(material, "point_lights_count", 4);
+    nsPrecisionTimer timer;
+    nsPrecisionTimer_start(&timer);
+    nsOBJ obj = nsOBJ_load("../game/assets/models/shaderball.obj");
+    double elapsed = nsPrecisionTimer_stop(&timer);
+    printf("OBJ loaded in: %f ms\n", elapsed * 1000.0);
+    printf("Triangles: %zu\n", obj.mesh.tris->size);
+    size_t bytes = nsPool_total_memory_used(obj.mesh.tris);
+    double mb = (double)bytes / 1024.0 / 1024.0;
+    printf("Memory: %.1f MB (%zu bytes)\n", mb, bytes);
+
+    nsMaterial_set_uniform_int(material, "point_lights_count", 0);
 
     nsTexture *tex = nsTexture_new();
-    nsTexture_write_from_file(tex, "../game/assets/textures/uv_debug_512.png");
+    //nsTexture_write_from_file(tex, "../game/assets/textures/diamond_ore.png");
+    nsTexture_fill(tex, NS_RGB(1.0f, 0.0f, 0.0f));
+
+    struct nk_colorf diffuse_color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    nsTexture *specular_map = nsTexture_new();
+    //nsTexture_write_from_file(specular_map, "../game/assets/textures/diamond_ore_specular.png");
+    nsTexture_fill(specular_map, NS_RGB(1.0f, 1.0f, 1.0f));
+    float specular = 1.0f;
 
     nsModel *light0 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f, 1.0f, 1.0f));
     nsModel_set_position(light0, NS_VECTOR3(1.0f, 1.0f, 7.0f));
@@ -173,31 +215,25 @@ void nsApp_run(nsApp *app) {
     nsModel *light2 = nsModel_new(nsMesh_from_cube(material, 0.3f, 0.3f, 0.3f, 1.0f, 1.0f));
     nsModel_set_position(light2, NS_VECTOR3(1.0f, 1.0f, -7.0f));
 
-    nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0, 1.0f, 1.0f));
+    //nsModel *model0 = nsModel_new(nsMesh_from_cube(material, 1.0, 1.0, 1.0, 1.0f, 1.0f));
+    nsMesh *mesh = nsMesh_from_obj(material, &obj);
+    nsModel *model0 = nsModel_new(mesh);
+    nsModel_set_position(model0, NS_VECTOR3(0.0f, -6.0f, 0.0f));
 
-    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0, 10.0f, 10.0f));
+    nsModel *ground = nsModel_new(nsMesh_from_plane(material, 1.0, 1.0, 100.0f, 100.0f));
     nsModel_set_scale(ground, NS_VECTOR3(1500.0, 1.0, 1500.0));
     nsModel_set_position(ground, NS_VECTOR3(0.0, -4.0, 0.0));
 
-    nsMatrix4 view = nsMatrix4_identity;
-    view = nsMatrix4_translate(view, NS_VECTOR3(0.0f, 0.0f, -3.0f));
-    nsMaterial_set_uniform_matrix4(material, "u_view", view);
-
     float aspect = (float)app->app_def.window_width / (float)app->app_def.window_height;
-    nsMatrix4 projection = nsMatrix4_perspective(NS_RADIANS(45.0f), aspect, 0.1f, 1000.0f);
-    nsMaterial_set_uniform_matrix4(material, "u_projection", projection);
+    nsCamera *camera = nsCamera_new(nsCameraProjection_PERSPECTIVE, aspect);
 
-    nsVector3 camera_pos = NS_VECTOR3(0.0f, 0.0f, 13.0f);
-    nsVector3 camera_front = NS_VECTOR3(0.0f, 0.0f, -1.0f);
-    nsVector3 camera_up = NS_VECTOR3(0.0f, 1.0f, 0.0f);
-    float camera_yaw = -90.0;
-    float camera_pitch = 0.0;
+    nsMaterial_set_uniform_matrix4(material, "u_projection", camera->projection_mat);
 
-    float camera_speed = 0.1f;
-    float camera_horizontal_sensitivity = 0.1f;
-    float camera_vertical_sensitivity = 0.1f;
+    float camera_horizontal_sensitivity = 0.5f;
+    float camera_vertical_sensitivity = 0.5f;
+    float camera_speed = 0.5f;
 
-    SDL_SetRelativeMouseMode(true);
+    //SDL_SetRelativeMouseMode(true);
 
     GLVersionInfo glversion = fetch_opengl_version();
     printf(
@@ -218,13 +254,27 @@ void nsApp_run(nsApp *app) {
         glversion.major, glversion.minor, glversion.profile_str
     );
     float a = 0.0f;
+    ns_bool mouse_pressed = false;
     while (app->is_running) {
         // TODO: clock tick
         
+        nk_input_begin(ctx);
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 nsApp_stop(app);
+            }
+
+            else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                if (event.button.button == 3) mouse_pressed = true;
+            }
+
+            else if (event.type == SDL_MOUSEBUTTONUP) {
+                mouse_pressed = false;
+            }
+
+            else if (event.type == SDL_MOUSEWHEEL) {
+                camera->distance -= event.wheel.preciseY * 3.0f;
             }
 
             else if (event.type == SDL_KEYDOWN) {
@@ -242,101 +292,156 @@ void nsApp_run(nsApp *app) {
             }
 
             // TODO: inputsystem->process(event)
+            nk_sdl_handle_event(&event);
+        }
+        nk_sdl_handle_grab();
+        nk_input_end(ctx);
+
+        // UI
+        {
+            if (nk_begin(ctx, "Settings", nk_rect(0.0f, 0.0f, 300.0f, 300.0f), NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+                char display_buf[16];
+                const float ratio[] = {0.40f, 0.47f, 0.13f};
+
+                {
+                    nk_layout_row(ctx, NK_DYNAMIC, 32, 2, ratio);
+
+                    nk_label(ctx, "Diffuse", NK_TEXT_LEFT);
+
+                    diffuse_color = nk_color_picker(ctx, diffuse_color, NK_RGB);
+
+                    nsTexture_fill(tex, NS_RGB(diffuse_color.r, diffuse_color.g, diffuse_color.b));
+                }
+
+                {
+                    nk_layout_row(ctx, NK_DYNAMIC, 16, 3, ratio);
+
+                    nk_label(ctx, "Specular", NK_TEXT_LEFT);
+
+                    if (nk_slider_float(ctx, 0.0f, &specular, 1.0f, 0.05f)) {
+                        nsTexture_fill(specular_map, NS_RGB(specular, specular, specular));
+                    }
+                    
+                    sprintf(display_buf, "%3.2f", specular);
+                    nk_label(ctx, display_buf, NK_TEXT_LEFT);
+                }
+
+                {
+                    nk_layout_row(ctx, NK_DYNAMIC, 16, 3, ratio);
+
+                    nk_label(ctx, "Shininess", NK_TEXT_LEFT);
+
+                    float value = nsMaterial_get_uniform_float(material, "material.shininess");
+                    nk_slider_float(ctx, 1.0f, &value, 128.0f, 0.05f);
+                    
+                    sprintf(display_buf, "%3.2f", value);
+                    nk_label(ctx, display_buf, NK_TEXT_LEFT);
+
+                    nsMaterial_set_uniform_float(material, "material.shininess", value);
+                }
+            }
+            nk_end(ctx);
         }
 
+        // RENDER
         {
-            nsVector3 rotation = nsModel_get_euler_angles(model0);
-            rotation.x += 0.01f;
-            rotation.y += 0.02f;
-            rotation.z += 0.04f;
-            nsModel_set_euler_angles(model0, rotation);
-            
-
             int mouse_rx, mouse_ry;
             SDL_GetRelativeMouseState(&mouse_rx, &mouse_ry);
 
-            camera_yaw += (float)mouse_rx * camera_horizontal_sensitivity;
-            camera_pitch += -(float)mouse_ry * camera_vertical_sensitivity;
-
-            if (camera_pitch > 89.9f) camera_pitch = 89.9f;
-            else if (camera_pitch < -89.9f) camera_pitch = -89.9f;
-
-            nsVector3 dir = nsVector3_zero;
-            float c = ns_cos(NS_RADIANS(camera_pitch));
-            dir.x = ns_cos(NS_RADIANS(camera_yaw)) * c;
-            dir.y = ns_sin(NS_RADIANS(camera_pitch));
-            dir.z = ns_sin(NS_RADIANS(camera_yaw)) * c;
-            camera_front = nsVector3_normalize(dir);
+            if (mouse_pressed) {
+                camera->yaw += (float)mouse_rx * camera_horizontal_sensitivity;
+                camera->pitch += (float)mouse_ry * camera_vertical_sensitivity;
+            }
 
             const Uint8 *keystate = SDL_GetKeyboardState(NULL);
             if (keystate[SDL_SCANCODE_W]) {
-                camera_pos = nsVector3_add(camera_pos, nsVector3_mul(camera_front, camera_speed));
+                nsCamera_move(camera, camera_speed);
             }
             if (keystate[SDL_SCANCODE_S]) {
-                camera_pos = nsVector3_sub(camera_pos, nsVector3_mul(camera_front, camera_speed));
+                nsCamera_move(camera, -camera_speed);
             }
             if (keystate[SDL_SCANCODE_A]) {
-                nsVector3 right = nsVector3_normalize(nsVector3_cross(camera_front, camera_up));
-                camera_pos = nsVector3_sub(camera_pos, nsVector3_mul(right, camera_speed));
+                nsCamera_strafe(camera, camera_speed);
             }
             if (keystate[SDL_SCANCODE_D]) {
-                nsVector3 right = nsVector3_normalize(nsVector3_cross(camera_front, camera_up));
-                camera_pos = nsVector3_add(camera_pos, nsVector3_mul(right, camera_speed));
+                nsCamera_strafe(camera, -camera_speed);
             }
-
-            view = nsMatrix4_look_at(camera_pos, nsVector3_add(camera_pos, camera_front), camera_up);
-            nsMaterial_set_uniform_matrix4(material, "u_view", view);
-            nsMaterial_set_uniform_vector3(material, "u_view_pos", camera_pos);
+            if (keystate[SDL_SCANCODE_Q]) {
+                camera->position = nsVector3_add(camera->position, nsVector3_mul(camera->up, camera_speed));
+            }
+            if (keystate[SDL_SCANCODE_E]) {
+                camera->position = nsVector3_add(camera->position, nsVector3_mul(camera->up, -camera_speed));
+            }
+            
+            nsCamera_update(camera);
+            nsMaterial_set_uniform_matrix4(material, "u_view", camera->view_mat);
+            nsMaterial_set_uniform_vector3(material, "u_view_pos", camera->position);
 
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             glClear(GL_DEPTH_BUFFER_BIT);
+
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
             
-            nsMaterial_set_uniform_vector3(material, "material.ambient", NS_VECTOR3(1.0f, 1.0f, 1.0f));
-            nsMaterial_set_uniform_vector3(material, "material.diffuse", NS_VECTOR3(1.0f, 1.0f, 1.0f));
+            nsMaterial_set_uniform_int(material, "material.diffuse", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, tex->texture_id);  
             nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(0.0f, 0.0f, 0.0f));
-            nsMaterial_set_uniform_vector3(material, "material.specular", NS_VECTOR3(0.5f, 0.5f, 0.5f));
-            nsMaterial_set_uniform_float(material, "material.shininess", 64.0f);
+            nsMaterial_set_uniform_int(material, "material.specular", 1);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, specular_map->texture_id);  
+            //nsMaterial_set_uniform_float(material, "material.shininess", 64.0f);
             
             nsModel_render(model0);
-            nsModel_render(ground);
+            //nsModel_render(ground);
 
-            nsMaterial_set_uniform_vector3(material, "material.ambient", NS_VECTOR3(0.0f, 0.0f, 0.0f));
-            nsMaterial_set_uniform_vector3(material, "material.diffuse", NS_VECTOR3(0.0f, 0.0f, 0.0f));
+            //nsMaterial_set_uniform_vector3(material, "material.diffuse", NS_VECTOR3(0.0f, 0.0f, 0.0f));
             nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 1.0f, 1.0f));
-            nsMaterial_set_uniform_vector3(material, "material.specular", NS_VECTOR3(0.0f, 0.0f, 0.0f));
-            nsMaterial_set_uniform_float(material, "material.shininess", 1.0f);
+            //nsMaterial_set_uniform_vector3(material, "material.specular", NS_VECTOR3(0.0f, 0.0f, 0.0f));
+            //nsMaterial_set_uniform_float(material, "material.shininess", 1.0f);
 
 
-            a += 0.01f;
+            a =0.71f;
             nsVector3 lightpos0 = NS_VECTOR3(ns_cos(a) * 3.0, ns_cos(a) * 3.0, ns_sin(a) * 3.0);
             nsVector3 lightpos1 = NS_VECTOR3(ns_cos(-a) * 3.0, ns_sin(a) * 3.0, ns_sin(-a) * 3.0);
             nsVector3 lightpos2 = NS_VECTOR3(ns_sin(a) * 3.0, ns_sin(-a + 0.3) * 3.0, ns_cos(-a) * 3.0);
 
+            lightpos0 = NS_VECTOR3(10.0f, 5.0f, 10.0f);
+
             nsModel_set_position(light0, lightpos0);
             nsMaterial_set_uniform_vector3(material, "point_lights[0].position", lightpos0);
 
-            nsModel_set_position(light1, lightpos1);
-            nsMaterial_set_uniform_vector3(material, "point_lights[1].position", lightpos1);
+            //nsModel_set_position(light1, lightpos1);
+            //nsMaterial_set_uniform_vector3(material, "point_lights[1].position", lightpos1);
 
-            nsModel_set_position(light2, lightpos2);
-            nsMaterial_set_uniform_vector3(material, "point_lights[2].position", lightpos2);
+            //nsModel_set_position(light2, lightpos2);
+            //nsMaterial_set_uniform_vector3(material, "point_lights[2].position", lightpos2);
 
 
-            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 0.0f, 1.0f));
+            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 1.0f, 1.0f));
             nsModel_render(light0);
 
-            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 1.0f, 0.0f));
-            nsModel_render(light1);
+            // nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(1.0f, 1.0f, 0.0f));
+            // nsModel_render(light1);
 
-            nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(0.0f, 1.0f, 1.0f));
-            nsModel_render(light2);
+            //nsMaterial_set_uniform_vector3(material, "material.emissive", NS_VECTOR3(0.0f, 1.0f, 1.0f));
+            //nsModel_render(light2);
         }
+
+        nk_sdl_render(
+            NK_ANTI_ALIASING_ON,
+            100 * 1024,
+            25 * 1024
+        );
 
         SDL_GL_SwapWindow(app->window);
     }
 
     nsModel_free(model0);
+
+    nk_sdl_shutdown();
 }
 
 void nsApp_stop(nsApp *app) {

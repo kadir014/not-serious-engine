@@ -12,33 +12,92 @@
 #include "engine/include/core/io.h"
 #include "engine/include/core/profiler.h"
 
-static ns_bool is_whitespace(char chr) {
+static inline ns_bool is_whitespace(char chr) {
     return (chr == ' ' || chr == '\t' || chr == '\r' || chr == '\n');
 }
 
 #define ADVANCE obj->current++
 
-static void skip_whitespace(nsOBJ *obj) {
+static inline void skip_whitespace(nsOBJ *obj) {
     while (*obj->current != '\0' && is_whitespace(*obj->current)) {
         ADVANCE;
     }
 }
 
-static float parse_float(nsOBJ *obj) {
-    char *end;
-    float value = strtof(obj->current, &end);
-    obj->current = end;
-    return value;
+static inline void skip_line(nsOBJ *obj) {
+    while (*obj->current != '\0') {
+        ADVANCE;
+        if (*obj->current == '\n') {
+            break;
+        }
+    }
+
+    // Skin \n
+    ADVANCE;
 }
 
-static long parse_long(nsOBJ *obj) {
-    char *end;
-    long value = strtol(obj->current, &end, 10);
-    obj->current = end;
-    return value;
+// KOD NE YAPIYO ANLA, KENDIN TEKRAR YAZ, HATTA OPTIMIZE ET?
+
+static inline float fast_atof(const char **p) {
+    const char *s = *p;
+    float sign = 1.0f;
+    if (*s == '-') { sign = -1.0f; s++; }
+    else if (*s == '+') { s++; }
+
+    float value = 0.0f;
+    while (*s >= '0' && *s <= '9') {
+        value = value * 10.0f + (*s - '0');
+        s++;
+    }
+
+    if (*s == '.') {
+        s++;
+        float frac = 0.0f;
+        float scale = 1.0f;
+        while (*s >= '0' && *s <= '9') {
+            frac = frac * 10.0f + (*s - '0');
+            scale *= 10.0f;
+            s++;
+        }
+        value += frac / scale;
+    }
+
+    *p = s;
+    return value * sign;
 }
 
-static void parse_vertex(nsOBJ *obj) {
+static inline int fast_atoi(const char **p) {
+    const char *s = *p;
+    int sign = 1;
+    if (*s == '-') { sign = -1; s++; }
+
+    int value = 0;
+    while (*s >= '0' && *s <= '9') {
+        value = value * 10 + (*s - '0');
+        s++;
+    }
+    *p = s;
+    return value * sign;
+}
+
+static inline float parse_float(nsOBJ *obj) {
+    // char *end;
+    // float value = strtof(obj->current, &end);
+    // obj->current = end;
+    // return value;
+
+    return fast_atof(&obj->current);
+}
+
+static inline long parse_long(nsOBJ *obj) {
+    // char *end;
+    // long value = strtol(obj->current, &end, 10);
+    // obj->current = end;
+    // return value;
+    return (long)fast_atoi(&obj->current);
+}
+
+static inline void parse_vertex(nsOBJ *obj) {
     /*
         Syntax:
         v float float float
@@ -59,7 +118,7 @@ static void parse_vertex(nsOBJ *obj) {
     nsPool_add(obj->vertices, &vertex);
 }
 
-static void parse_normal(nsOBJ *obj) {
+static inline void parse_normal(nsOBJ *obj) {
     /*
         Syntax:
         vn float float float
@@ -80,7 +139,7 @@ static void parse_normal(nsOBJ *obj) {
     nsPool_add(obj->normals, &normal);
 }
 
-static void parse_uv(nsOBJ *obj) {
+static inline void parse_uv(nsOBJ *obj) {
     /*
         Syntax:
         vt float float
@@ -98,7 +157,7 @@ static void parse_uv(nsOBJ *obj) {
     nsPool_add(obj->uvs, &uv);
 }
 
-static void parse_face(nsOBJ *obj) {
+static inline void parse_face(nsOBJ *obj) {
     /*
         Syntax:
         f int/[int]/[int] int/[int]/[int] int/[int]/[int]
@@ -150,7 +209,11 @@ static void parse_obj(nsOBJ *obj) {
     while (*obj->current != '\0') {
         skip_whitespace(obj);
 
-        if (*obj->current == 'v' && is_whitespace(*(obj->current + 1))) {
+        if (*obj->current == '#') {
+            skip_line(obj);
+        }
+
+        else if (*obj->current == 'v' && is_whitespace(*(obj->current + 1))) {
             parse_vertex(obj);
         }
 
@@ -162,12 +225,12 @@ static void parse_obj(nsOBJ *obj) {
             parse_uv(obj);
         }
 
-        else if (*obj->current == 'f' && is_whitespace(*(obj->current + 1))) {
+        else if (*obj->current == 'f') {
             parse_face(obj);
         }
         
         else {
-            ADVANCE;
+            skip_line(obj);
         }
     }
 }

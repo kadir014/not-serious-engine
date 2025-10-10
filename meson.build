@@ -60,6 +60,7 @@ engine_src = [
     'engine/src/graphics/texture.c',
     'engine/src/model/model.c',
     'engine/src/loaders/obj.c',
+    'engine/src/scene/camera.c',
     'engine/src/app/app.c'
 ]
 

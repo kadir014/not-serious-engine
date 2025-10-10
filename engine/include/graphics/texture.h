@@ -16,6 +16,7 @@
 #define _NS_TEXTURE_H
 
 #include "engine/include/_internal.h"
+#include "engine/include/graphics/color.h"
 
 
 /**
@@ -46,6 +47,8 @@ void nsTexture_free(nsTexture *texture);
 void nsTexture_write(nsTexture *texture, size_t width, size_t height, ns_u8 *data);
 
 int nsTexture_write_from_file(nsTexture *texture, const char *filepath);
+
+int nsTexture_fill(nsTexture *texture, nsColor color);
 
 
 #endif

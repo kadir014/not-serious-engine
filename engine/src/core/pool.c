@@ -86,3 +86,9 @@ void *nsPool_get(nsPool *pool, size_t index) {
 int nsPool_remove(nsPool *pool, size_t index);
 
 void nsPool_clear(nsPool *pool);
+
+size_t nsPool_total_memory_used(nsPool *pool) {
+    size_t pool_s = sizeof(nsPool);
+    pool_s += pool->max * pool->elem_size;
+    return pool_s;
+}

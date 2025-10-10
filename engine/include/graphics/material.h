@@ -92,9 +92,11 @@ void nsMaterial_set_uniform_matrix4(
     nsMatrix4 mat
 );
 
-nsMaterial_set_uniform_float(nsMaterial *material, char *name, float value);
+void nsMaterial_set_uniform_float(nsMaterial *material, char *name, float value);
 
-nsMaterial_set_uniform_int(nsMaterial *material, char *name, int value);
+void nsMaterial_set_uniform_int(nsMaterial *material, char *name, int value);
+
+float nsMaterial_get_uniform_float(nsMaterial *material, char *name);
 
 
 #endif

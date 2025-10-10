@@ -200,7 +200,7 @@ void nsMaterial_set_uniform_matrix4(
     }
 }
 
-nsMaterial_set_uniform_float(nsMaterial *material, char *name, float value) {
+void nsMaterial_set_uniform_float(nsMaterial *material, char *name, float value) {
     nsUniform *uniform = nsMaterial_get_uniform(material, name);
 
     if (uniform) {
@@ -209,11 +209,21 @@ nsMaterial_set_uniform_float(nsMaterial *material, char *name, float value) {
     }
 }
 
-nsMaterial_set_uniform_int(nsMaterial *material, char *name, int value) {
+void nsMaterial_set_uniform_int(nsMaterial *material, char *name, int value) {
     nsUniform *uniform = nsMaterial_get_uniform(material, name);
 
     if (uniform) {
         glUseProgram(material->program_id);
         glUniform1i(uniform->location, value);
     }
+}
+
+float nsMaterial_get_uniform_float(nsMaterial *material, char *name) {
+    nsUniform *uniform = nsMaterial_get_uniform(material, name);
+
+    float v = 0.0;
+
+    glGetUniformfv(material->program_id, uniform->location, &v);
+
+    return v;
 }

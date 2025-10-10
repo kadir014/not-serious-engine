@@ -65,5 +65,13 @@ int nsPool_remove(nsPool *pool, size_t index);
 
 void nsPool_clear(nsPool *pool);
 
+/**
+ * @brief Get the total amount of memory used by this pool instance.
+ * 
+ * @param pool Pool
+ * @return size_t 
+ */
+size_t nsPool_total_memory_used(nsPool *pool);
+
 
 #endif

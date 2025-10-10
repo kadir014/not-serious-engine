@@ -11,13 +11,6 @@
 #include "engine/include/model/model.h"
 
 
-/**
- * @file model/model.c
- * 
- * @brief Model type.
- */
-
-
 nsModel *nsModel_new(nsMesh *mesh) {
     nsModel *model = NS_NEW(nsModel);
     NS_MEM_CHECK(model);
