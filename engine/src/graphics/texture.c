@@ -63,7 +63,8 @@ int nsTexture_fill(nsTexture *texture, nsColor color) {
         return 1;
     }
 
-    SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, (ns_u8)(color.r * 255.0f), (ns_u8)(color.g * 255.0f), (ns_u8)(color.b * 255.0f)));
+    // TODO: SOMETHING IS WRONG THIS SHOULDN'T BE BGR
+    SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, (ns_u8)(color.b * 255.0f), (ns_u8)(color.g * 255.0f), (ns_u8)(color.r * 255.0f)));
 
     nsTexture_write(texture, (size_t)surf->w, (size_t)surf->h, (ns_u8 *)surf->pixels);
     SDL_FreeSurface(surf);
