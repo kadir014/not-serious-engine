@@ -81,20 +81,20 @@ static inline int fast_atoi(const char **p) {
 }
 
 static inline float parse_float(nsOBJ *obj) {
-    // char *end;
-    // float value = strtof(obj->current, &end);
-    // obj->current = end;
-    // return value;
+    char *end;
+    float value = strtof(obj->current, &end);
+    obj->current = end;
+    return value;
 
-    return fast_atof(&obj->current);
+    //return fast_atof(&obj->current);
 }
 
 static inline long parse_long(nsOBJ *obj) {
-    // char *end;
-    // long value = strtol(obj->current, &end, 10);
-    // obj->current = end;
-    // return value;
-    return (long)fast_atoi(&obj->current);
+    char *end;
+    long value = strtol(obj->current, &end, 10);
+    obj->current = end;
+    return value;
+    //return (long)fast_atoi(&obj->current);
 }
 
 static inline void parse_vertex(nsOBJ *obj) {
