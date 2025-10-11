@@ -21,6 +21,7 @@
 #include "engine/include/core/types.h"
 #include "engine/include/core/platform.h"
 #include "engine/include/core/array.h"
+#include "engine/include/core/pool.h"
 #include "engine/include/core/io.h"
 #include "engine/include/core/profiler.h"
 #include "engine/include/core/version.h"
@@ -28,7 +29,9 @@
 #include "engine/include/math/math.h"
 #include "engine/include/math/vector.h"
 #include "engine/include/math/matrix.h"
+#include "engine/include/math/transform.h"
 
+#include "engine/include/graphics/color.h"
 #include "engine/include/graphics/material.h"
 #include "engine/include/graphics/mesh.h"
 #include "engine/include/graphics/buffer.h"
@@ -36,6 +39,9 @@
 #include "engine/include/graphics/texture.h"
 
 #include "engine/include/model/model.h"
+
+#include "engine/include/scene/scene.h"
+#include "engine/include/scene/camera.h"
 
 #include "engine/include/loaders/obj.h"
 

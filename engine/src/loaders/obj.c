@@ -285,7 +285,7 @@ nsOBJ nsOBJ_load_raw(char *source) {
 nsOBJ nsOBJ_load(const char *filepath) {
     char *content = ns_read_file_raw(filepath);
     if (!content) {
-        return;
+        return (nsOBJ){0};
     }
 
     nsOBJ obj = nsOBJ_load_raw(content);

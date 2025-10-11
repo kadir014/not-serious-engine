@@ -18,6 +18,29 @@ nsError _ns_global_error = {
 };
 
 
+nsLogger _ns_global_logger = {
+    .outs = {NULL},
+    .min_severity = nsErrorSeverity_DEBUG
+};
+
+
 nsError ns_get_error() {
     return _ns_global_error;
+}
+
+
+nsLogger *ns_get_logger() {
+    return &_ns_global_logger;
+}
+
+void ns_log(const char *message, nsErrorSeverity severity) {
+    const char *severity_str = nsErrorSeverity_as_string(severity);
+
+    for (size_t i = 0; i < NS_LOGGER_MAX_OUT_STREAMS; i++) {
+        FILE *stream = _ns_global_logger.outs[i];
+
+        if (!stream) continue;
+
+        fprintf(stream, "[%-7s] %s\n", severity_str, message);
+    }
 }

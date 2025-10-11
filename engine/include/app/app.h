@@ -16,6 +16,7 @@
  * @brief Top-level application context.
  */
 #include "engine/include/_internal.h"
+#include "engine/include/scene/scene.h"
 
 
 typedef struct {
@@ -36,12 +37,23 @@ typedef struct {
 
     SDL_Window *window;
     SDL_GLContext *gl_ctx;
+    struct nk_context *ui_ctx;
+
+    nsScene *current_scene;
 } nsApp;
+
+
+/**
+ * @brief Global singleton app instance.
+ */
+extern nsApp *ns_global_app;
 
 /**
  * @brief Create & initialize new application.
  * 
  * Returns `NULL` on error. Use @ref ns_get_error to get more information.
+ * 
+ * Returns the singleton instance if already created once.
  * 
  * @param app_def Application definition
  * @return nsApp * 
@@ -60,6 +72,8 @@ void nsApp_free(nsApp *app);
 void nsApp_run(nsApp *app);
 
 void nsApp_stop(nsApp *app);
+
+void nsApp_push_scene(nsApp *app, nsScene *scene);
 
 
 #endif

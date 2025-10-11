@@ -166,7 +166,7 @@
 /**
  * @brief Get the compiler identification as string.
  * 
- * @return char *
+ * @return const char *
  */
 static inline const char *NS_COMPILER_as_string() {
     switch (NS_COMPILER) {
@@ -187,7 +187,7 @@ static inline const char *NS_COMPILER_as_string() {
 /**
  * @brief Get the platform identification as string.
  * 
- * @return char *
+ * @return const char *
  */
 static inline const char *NS_PLATFORM_as_string() {
     switch (NS_PLATFORM) {
@@ -220,7 +220,7 @@ static inline const char *NS_PLATFORM_as_string() {
 /**
  * @brief Get the architecture identification as string.
  * 
- * @return char *
+ * @return const char *
  */
 static inline const char *NS_ARCH_as_string() {
     switch (NS_ARCH) {

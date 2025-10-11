@@ -9,9 +9,13 @@
 */
 
 #include "engine/include/engine.h"
+#include "game/src/scenes/materialdemo.h"
 
 
 int main(int argc, char **argv) {
+    nsLogger *logger = ns_get_logger();
+    logger->outs[0] = stdout;
+
     nsAppDefinition app_def = {
         .window_title = "Not-Serious-Engine App",
         .window_width = 1280,
@@ -20,15 +24,12 @@ int main(int argc, char **argv) {
         .vsync = true
     };
     nsApp *app = nsApp_new(app_def);
+    
+    nsApp_push_scene(app, &nsMaterialDemoScene);
 
     nsApp_run(app);
 
     nsApp_free(app);
-
-    printf("Latest error before exiting:\n");
-    printf("Code: %u\n", ns_get_error().code);
-    printf("Severity: %u\n", ns_get_error().severity);
-    printf("Message: %s\n", ns_get_error().message);
 
     return EXIT_SUCCESS;
 }

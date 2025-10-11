@@ -84,8 +84,9 @@ libnsengine = library(
 
 game_src = [
     'game/src/main.c',
+    'game/src/scenes/materialdemo.c'
 ]
-game_includes = engine_includes
+game_includes = ['engine/include', 'game/src', 'external']
 
 executable(
     'game',
